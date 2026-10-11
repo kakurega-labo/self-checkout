@@ -29,10 +29,10 @@ export async function onRequest({request,env}){
  if(!kv)return J({error:'no-kv'},503);
  if(p==='start'&&request.method==='GET'){const ts=Date.now();return J({t:ts+'.'+await sign(env.SECRET||'dev',String(ts))})}
  if(p==='rank'&&request.method==='GET'){
-  const sc=u.searchParams.get('scope')==='all'?'all':'day',ck=new Request(u.origin+'/api/rank?scope='+sc+'&d='+day()),hit=await caches.default.match(ck);
+  const sc=u.searchParams.get('scope')==='all'?'all':'day',ck=new Request(u.origin+'/api/rank?scope='+sc+'&d='+day()),hit=u.searchParams.get('fresh')?null:await caches.default.match(ck);
   if(hit)return hit;
   const keys=(await kv.list({prefix:sc==='all'?'a:':'d'+day()+':',limit:50})).keys;
-  const res=new Response(JSON.stringify({items:keys.map((k,i)=>({r:i+1,n:k.metadata.n,sc:k.metadata.sc,h:k.metadata.h}))}),{headers:{'content-type':'application/json','cache-control':'public, max-age=20'}});
+  const res=new Response(JSON.stringify({items:keys.map((k,i)=>({r:i+1,n:k.metadata.n,sc:k.metadata.sc,pf:k.metadata.pf,h:k.metadata.h}))}),{headers:{'content-type':'application/json','cache-control':'public, max-age=10'}});
   await caches.default.put(ck,res.clone());return res}
  if(p==='score'&&request.method==='POST'){
   const b=await request.json().catch(()=>null);if(!b)return J({error:'bad'},400);
