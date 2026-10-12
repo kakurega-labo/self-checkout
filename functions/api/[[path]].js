@@ -11,7 +11,11 @@ const jst=n=>new Date(Date.now()+324e5-n*864e5).toISOString().slice(0,10).replac
 const day=()=>jst(0);
 const J=(o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 
-// One row per player per scope ('all' or the JST date). Rank = higher score, then more perfects, then earlier.
+// Difficulty d = 1..4 (初級/中級/上級/超上級). Scope key: 中級(2) keeps the ORIGINAL keys ('all' / 'YYYYMMDD') so existing records need no migration; others are 'all:d' / 'YYYYMMDD:d'.
+const SKEY=(b,d)=>d===2?b:b+':'+d;
+const DOK=v=>[1,2,3,4].includes(+v)?+v:2,OPEN=[0,1,1,1,0],MAXP=[0,0,3980,7000,400000],YD=[0,0,4,4,50]; // MAXP: highest single price per shop (yen sanity check). YD: yen per point
+const calc=(d,c,pf,mc,y)=>c*1000+pf*500+mc*200+(d>=3?Math.floor(y/YD[d]):0);
+// One row per player per scope ('all:d' or 'JSTdate:d'). Rank = higher score, then more perfects, then earlier.
 const AFTER='(excluded.sc>sc OR (excluded.sc=sc AND excluded.pf>pf))';
 const UPSERT=`INSERT INTO scores(scope,h,name,sc,pf,mc,cnt,at) VALUES(?,?,?,?,?,?,?,?)
  ON CONFLICT(scope,h) DO UPDATE SET name=excluded.name,
@@ -26,15 +30,15 @@ async function rankOf(db,scope,h){
 export async function onRequest({request,env}){
  const u=new URL(request.url),p=u.pathname.replace(/^\/api\//,''),db=env.DB;
  if(!db)return J({error:'no-db'},503);
- if(p==='start'&&request.method==='GET'){const ts=Date.now();return J({t:ts+'.'+await sign(env.SECRET||'dev',String(ts))})}
+ if(p==='start'&&request.method==='GET'){const ts=Date.now();return J({v:2,t:ts+'.'+await sign(env.SECRET||'dev',String(ts))})}
  if(p==='rank'&&request.method==='GET'){
-  const sc=u.searchParams.get('scope')==='all'?'all':'day',ck=new Request(u.origin+'/api/rank?scope='+sc+'&d='+day()),hit=u.searchParams.get('fresh')?null:await caches.default.match(ck);
+  const sc=u.searchParams.get('scope')==='all'?'all':'day',d=DOK(u.searchParams.get('d')),ck=new Request(u.origin+'/api/rank?scope='+sc+'&lv='+d+'&d='+day()),hit=u.searchParams.get('fresh')?null:await caches.default.match(ck);
   if(hit)return hit;
-  const{results}=await db.prepare('SELECT name AS n,sc,pf,mc,h FROM scores WHERE scope=? ORDER BY sc DESC,pf DESC,at ASC LIMIT 100').bind(sc==='all'?'all':day()).all();
+  const{results}=await db.prepare('SELECT name AS n,sc,pf,mc,h FROM scores WHERE scope=? ORDER BY sc DESC,pf DESC,at ASC LIMIT 100').bind(SKEY(sc==='all'?'all':day(),d)).all();
   const res=new Response(JSON.stringify({items:results.map((x,i)=>({r:i+1,...x}))}),{headers:{'content-type':'application/json','cache-control':'public, max-age=10'}});
   await caches.default.put(ck,res.clone());return res}
  if(p==='me'&&request.method==='GET'){ // my own rank (not cached), for the "you are #n" card
-  const scope=u.searchParams.get('scope')==='all'?'all':day(),h=String(u.searchParams.get('h')||'');
+  const scope=SKEY(u.searchParams.get('scope')==='all'?'all':day(),DOK(u.searchParams.get('d'))),h=String(u.searchParams.get('h')||'');
   if(!/^[0-9a-f]{16}$/.test(h))return J({error:'h'},400);
   const row=await db.prepare('SELECT name AS n,sc,pf,mc FROM scores WHERE scope=? AND h=?').bind(scope,h).first();
   return J(row?{registered:true,r:await rankOf(db,scope,h),...row}:{registered:false})}
@@ -43,15 +47,19 @@ export async function onRequest({request,env}){
   const name=Array.from(String(b.name||'').replace(/[\u0000-\u001f<>&"'`]/g,'').trim()).slice(0,10).join('');
   if(!name)return J({error:'name'},400);if(isBad(name))return J({error:'ng'},400);
   if(!/^[a-z0-9]{8,32}$/.test(String(b.pid||'')))return J({error:'pid'},400);
-  const c=+b.count,pf=+b.perf,mc=+b.maxC;
-  if(![c,pf,mc].every(Number.isInteger)||c<0||c>45||pf<0||pf>c||mc<0||mc>c)return J({error:'range'},400);
+  const c=+b.count,pf=+b.perf,mc=+b.maxC,d=b.d===undefined?2:+b.d; // old clients send no d: treat as 中級
+  if(![1,2,3,4].includes(d))return J({error:'diff'},400);
+  if(!OPEN[d])return J({error:'locked'},403); // 超上級は準備中。M15で OPEN の最後を 1 にして開放する
+  const y=d>=3?(b.y===undefined?0:+b.y):0; // total yen (上級・超上級のみ得点に入る。中級は従来の式のまま)
+  if(![c,pf,mc,y].every(Number.isInteger)||c<0||c>70||pf<0||pf>c||mc<0||mc>c||y<0||y>c*MAXP[d])return J({error:'range'},400);
   if(env.SECRET){ // token from /api/start: must be 55s..30min old, single use
    const[ts,sig]=String(b.t||'').split('.'),age=Date.now()-(+ts);
    if(!ts||!sig||!(age>55e3&&age<18e5)||sig!==await sign(env.SECRET,ts))return J({error:'token'},400);
    const r=await db.prepare('INSERT OR IGNORE INTO used_tokens(sig,at) VALUES(?,?)').bind(sig,Date.now()).run();
    if(!r.meta.changes)return J({error:'used'},400)}
-  const h=(await sha(b.pid)).slice(0,16),sc=c*1000+pf*500+mc*200,now=Date.now(),d=day(),up=db.prepare(UPSERT);
-  await db.batch([up.bind('all',h,name,sc,pf,mc,c,now),up.bind(d,h,name,sc,pf,mc,c,now),
-   db.prepare("DELETE FROM scores WHERE scope<>'all' AND scope<?").bind(jst(7)),db.prepare('DELETE FROM used_tokens WHERE at<?').bind(now-36e5)]);
-  return J({all:await rankOf(db,'all',h),day:await rankOf(db,d,h)})}
+  const h=(await sha(b.pid)).slice(0,16),sc=calc(d,c,pf,mc,y),now=Date.now(),dy=day(),up=db.prepare(UPSERT),ka=SKEY('all',d),kd=SKEY(dy,d);
+  // rows of earlier days in the 'today' scope are not kept (deleted below); 'all:d' rows stay
+  await db.batch([up.bind(ka,h,name,sc,pf,mc,c,now),up.bind(kd,h,name,sc,pf,mc,c,now),
+   db.prepare("DELETE FROM scores WHERE substr(scope,1,3)<>'all' AND substr(scope,1,8)<?").bind(dy),db.prepare('DELETE FROM used_tokens WHERE at<?').bind(now-36e5)]);
+  return J({all:await rankOf(db,ka,h),day:await rankOf(db,kd,h)})}
  return J({error:'not-found'},404)}
