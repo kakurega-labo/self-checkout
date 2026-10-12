@@ -97,7 +97,19 @@ const PD=[['バナナ',128,74,56,g=>{g.beginPath();g.moveTo(-32,-12);g.quadratic
 ['レモン',88,64,48,g=>{g.beginPath();g.ellipse(0,0,27,19,0,0,7)},g=>{const r=g.createRadialGradient(-8,-6,3,0,0,28);r.addColorStop(0,'#fff27a');r.addColorStop(1,'#e0b81c');g.fillStyle=r;g.fill();g.beginPath();g.arc(-28,0,4,0,7);g.fill();g.beginPath();g.arc(28,0,4,0,7);g.fill()}],
 ['みかん',78,52,52,g=>{g.beginPath();g.arc(0,0,22,0,7)},g=>{const r=g.createRadialGradient(-7,-8,3,0,0,24);r.addColorStop(0,'#ffb347');r.addColorStop(1,'#e0731a');g.fillStyle=r;g.fill();g.fillStyle='#4f9a3a';g.beginPath();g.arc(0,-19,3.5,0,7);g.fill()}],
 ['きゅうり',98,100,36,g=>{rr(g,-50,-15,100,30,15)},g=>{const r=g.createLinearGradient(0,-15,0,15);r.addColorStop(0,'#6dbb52');r.addColorStop(.6,'#2f7a2c');r.addColorStop(1,'#1f5a21');g.fillStyle=r;g.fill();g.fillStyle='#173f17';for(let i=0;i<12;i++){g.beginPath();g.arc(-42+i*7.7,-8+(i%3)*8,1.3,0,7);g.fill()}g.fillStyle='#d9e08a';g.beginPath();g.arc(-47,0,4,0,7);g.fill();g.fillStyle='rgba(255,255,255,.22)';g.fillRect(-38,-11,70,3)}]];
-const PRODUCE=PD.map(([n,price,w,h,p,paint])=>{const t={n,price,w,h,k:420,z:.55,m:.8,tol:1,pr:true,sil:g=>{g.fillStyle=g.strokeStyle='#000';p(g);g.fill();g.stroke()},front:g=>{p(g);paint(g)}};t.fr=t.bk=mk(w,h,t.front);t.sh=shadowOf(t.sil,w,h);return t});
+// ---- more produce: fruits (expensive ones too) ----
+const grapes=(col,hi,r)=>{const P=[[-15,-14],[-5,-14],[5,-14],[15,-14],[-10,-3],[0,-3],[10,-3],[-5,8],[5,8],[0,18]];return[g=>{g.beginPath();P.forEach(a=>{g.moveTo(a[0]+r,a[1]);g.arc(a[0],a[1],r,0,7)})},g=>{g.fillStyle=col;g.fill();g.fillStyle=hi;P.forEach(a=>{g.beginPath();g.arc(a[0]-2.5,a[1]-2.5,2.2,0,7);g.fill()});g.strokeStyle='#5a4a1e';g.lineWidth=2;g.beginPath();g.moveTo(0,-22);g.lineTo(2,-30);g.stroke();g.fillStyle='#5aa03a';g.beginPath();g.ellipse(9,-27,7,3.5,-.4,0,7);g.fill()}]};
+const gp=grapes('#5a2a82','rgba(255,255,255,.4)',8),gm=grapes('#b9e27a','rgba(255,255,255,.6)',8.5);
+const PD2=[
+['シャインマスカット',1980,56,62,gm[0],gm[1]],['ぶどう',680,56,62,gp[0],gp[1]],
+['メロン',2480,56,58,g=>{g.beginPath();g.arc(0,2,24,0,7)},g=>{const r=g.createRadialGradient(-8,-6,3,0,2,26);r.addColorStop(0,'#d6ec9c');r.addColorStop(1,'#8fc063');g.fillStyle=r;g.fill();g.save();g.clip();g.strokeStyle='rgba(255,255,255,.55)';g.lineWidth=1;for(let i=-30;i<=30;i+=7){g.beginPath();g.moveTo(i,-26);g.lineTo(i+14,28);g.moveTo(i,28);g.lineTo(i+14,-26);g.stroke()}g.restore();g.fillStyle='#6b4a1e';g.fillRect(-2,-27,4,7)}],
+['スイカ',1480,58,58,g=>{g.beginPath();g.arc(0,0,26,0,7)},g=>{g.fillStyle='#4aa352';g.fill();g.save();g.clip();g.strokeStyle='#1f5a2a';g.lineWidth=4;for(let i=-4;i<=4;i++){g.beginPath();g.moveTo(i*7,-27);g.quadraticCurveTo(i*7+5,0,i*7,27);g.stroke()}g.restore()}],
+['さくらんぼ',1580,56,60,g=>{g.beginPath();g.arc(-11,13,12,0,7);g.moveTo(25,11);g.arc(13,11,12,0,7)},g=>{g.fillStyle='#c1121f';g.fill();g.strokeStyle='#5a7a2a';g.lineWidth=2.2;g.beginPath();g.moveTo(-11,2);g.quadraticCurveTo(-8,-14,2,-24);g.moveTo(13,0);g.quadraticCurveTo(10,-14,2,-24);g.stroke();g.fillStyle='rgba(255,255,255,.55)';g.beginPath();g.ellipse(-15,8,3,4.5,.4,0,7);g.fill();g.beginPath();g.ellipse(9,6,3,4.5,.4,0,7);g.fill()}],
+['もも',780,54,58,g=>{g.beginPath();g.arc(0,3,23,0,7)},g=>{const r=g.createRadialGradient(-8,-5,3,0,3,25);r.addColorStop(0,'#ffe3d2');r.addColorStop(1,'#f08596');g.fillStyle=r;g.fill();g.strokeStyle='rgba(176,60,86,.45)';g.lineWidth=1.6;g.beginPath();g.moveTo(1,-19);g.quadraticCurveTo(10,3,1,25);g.stroke();g.fillStyle='#5aa03a';g.beginPath();g.ellipse(9,-22,8,3.5,-.5,0,7);g.fill()}],
+['いちご',498,56,58,g=>{g.beginPath();g.moveTo(0,-18);g.bezierCurveTo(22,-22,28,6,0,24);g.bezierCurveTo(-28,6,-22,-22,0,-18)},g=>{const r=g.createRadialGradient(-6,-4,3,0,2,26);r.addColorStop(0,'#ff5a64');r.addColorStop(1,'#b3121f');g.fillStyle=r;g.fill();g.fillStyle='#ffe28a';for(let i=0;i<12;i++){g.beginPath();g.ellipse(-12+((i*11)%25),-8+((i*7)%26),1,1.6,0,0,7);g.fill()}g.fillStyle='#3f9a3a';for(let i=-2;i<=2;i++){g.save();g.translate(0,-18);g.rotate(i*.5);g.beginPath();g.ellipse(0,-4,2.6,6,0,0,7);g.fill();g.restore()}}]
+];
+const PRODUCE=PD.concat(PD2).map(([n,price,w,h,p,paint])=>{const t={n,price,w,h,k:420,z:.55,m:.8,tol:1,pr:true,sil:g=>{g.fillStyle=g.strokeStyle='#000';p(g);g.fill();g.stroke()},front:g=>{p(g);paint(g)}};t.fr=t.bk=mk(w,h,t.front);t.sh=shadowOf(t.sil,w,h);return t});
+PRODUCE.sort((a,b)=>{const OR=['バナナ','りんご','みかん','レモン','いちご','もも','さくらんぼ','スイカ','ぶどう','シャインマスカット','メロン','トマト','きゅうり'];return OR.indexOf(a.n)-OR.indexOf(b.n)});
 const cm=(w,h,fn)=>{const c=document.createElement('canvas');c.width=w*3;c.height=h*3;const g=c.getContext('2d');g.scale(3,3);fn(g,w,h);return c};
 const STB=cm(80,46,g=>{g.fillStyle='#f7d23a';rr(g,0,0,80,46,4);g.fill();bars(g,40,28,68,28);g.fillStyle='#c0281c';g.font='700 10px '+FONT;g.textAlign='center';g.textBaseline='alphabetic';g.fillText('20%引',40,10)});
 const STF=cm(48,28,g=>{g.fillStyle='#f7d23a';rr(g,0,0,48,28,5);g.fill();g.strokeStyle='#c0281c';g.lineWidth=1.5;rr(g,2,2,44,24,4);g.stroke();g.fillStyle='#c0281c';g.font='800 13px '+FONT;g.textAlign='center';g.textBaseline='middle';g.fillText('20%引',24,15)});
@@ -150,7 +162,27 @@ const poteto=RT('ポテトサラダ',248,88,72,'#cfcab9','6957',bcf(88,72),{x:26
 const koro=RT('コロッケ',238,92,72,'#cfcab9','3318',bcf(92,72),{x:28,y:-22},g=>{rr(g,-46,-36,92,72,8);g.fillStyle='#e9e6dc';g.fill();g.fillStyle='#8fc46a';for(let i=0;i<10;i++)g.fillRect(8+((i*7)%30),10+((i*5)%14),2,12);[[-22,-4],[4,8],[26,-6]].forEach(a=>{g.fillStyle='#b8741f';g.beginPath();g.ellipse(a[0],a[1],17,12,.3,0,7);g.fill();g.fillStyle='#d99a3a';g.beginPath();g.ellipse(a[0]-2,a[1]-2,13,8,.3,0,7);g.fill();g.fillStyle='#b8741f';for(let k=0;k<6;k++){g.beginPath();g.arc(a[0]-9+k*4,a[1]-4+((k*5)%9),1.2,0,7);g.fill()}});g.fillStyle='#fff';rr(g,-42,-32,34,14,3);g.fill();txt(g,'コロッケ',-25,-25,8,'#222',900)});
 [sake,yaki,sea].forEach(t=>TYPES.push(t));
 [kara,poteto,koro].forEach(t=>{t.fr=mk(t.w,t.h,t.front);t.bk=mk(t.w,t.h,t.back);t.sh=shadowOf(t.sil,t.w,t.h);TYPES.push(t)});
-const RN={'おにぎり':'おにぎり(梅)','お茶2L':'緑茶2L','弁当':'唐揚げ弁当','カップ麺':'カップ麺(醤油)','TWIGS':'チョコスナック','ほ・へ・と・み':'天然水','ボールアイス':'ボールアイス','ギョーザ':'冷凍ギョーザ','カルボナーラ':'パスタ(カルボナーラ)'};
+// ---- meat packs (many kinds) + expensive items ----
+const trayBase=(g,w,h,col)=>{rr(g,-w/2,-h/2,w,h,8);g.fillStyle=col;g.fill();g.strokeStyle='rgba(0,0,0,.14)';g.lineWidth=1.2;rr(g,-w/2+4,-h/2+4,w-8,h-8,6);g.stroke()};
+const wrapGl=(g,w,h)=>{g.save();rr(g,-w/2,-h/2,w,h,8);g.clip();g.fillStyle='rgba(255,255,255,.16)';g.beginPath();g.moveTo(-w/2,-h/2);g.lineTo(w*.1,-h/2);g.lineTo(-w*.25,h/2);g.lineTo(-w/2,h/2);g.fill();g.restore()};
+const mtag=(g,w,h,t)=>{g.fillStyle='#fff';rr(g,-w/2+6,-h/2+6,42,15,3);g.fill();txt(g,t,-w/2+27,-h/2+13.5,8,'#b3261b',900)};
+const blob=(g,x,y,rx,ry,a,c1,c2)=>{g.save();g.translate(x,y);g.rotate(a);g.fillStyle=c1;g.beginPath();g.ellipse(0,0,rx,ry,0,0,7);g.fill();g.fillStyle=c2;g.beginPath();g.ellipse(-rx*.2,-ry*.25,rx*.6,ry*.35,0,0,7);g.fill();g.restore()};
+const meatT=(n,price,code,tray,tagText,draw)=>RT(n,price,100,74,'#d8d4c8',code,bcf(100,74),{x:30,y:-20},(g,w,h)=>{trayBase(g,w,h,tray);draw(g);wrapGl(g,w,h);mtag(g,w,h,tagText)});
+const MEATS=[
+ meatT('牛こま切れ',498,'1187','#f1efe6','牛こま',g=>{[[-24,-2,15,10,.3],[2,-6,16,10,-.2],[26,0,14,10,.5],[-14,14,15,9,-.3],[12,16,15,9,.2],[32,17,10,7,0]].forEach(a=>blob(g,a[0],a[1],a[2],a[3],a[4],'#b3262e','#e8a0a0'))}),
+ meatT('豚バラ',398,'2043','#f1efe6','豚バラ',g=>{g.save();g.translate(0,4);g.rotate(-.22);for(let i=0;i<5;i++){g.fillStyle='#e07b84';g.fillRect(-34,-19+i*9,68,7);g.fillStyle='#f7dede';g.fillRect(-34,-19+i*9+2.5,68,2)}g.restore()}),
+ meatT('鶏もも肉',358,'3351','#f1efe6','鶏もも',g=>{[[-22,0,19,12,.2],[12,-6,19,12,-.2],[20,14,19,11,.1],[-12,16,17,10,-.3]].forEach(a=>blob(g,a[0],a[1],a[2],a[3],a[4],'#eab88a','#f7dcc0'))}),
+ meatT('合いびき肉',328,'4492','#f1efe6','ひき肉',g=>{g.fillStyle='#b4685a';g.beginPath();g.ellipse(0,6,36,24,0,0,7);g.fill();for(let i=0;i<70;i++){g.fillStyle=['#c98474','#9c4f44','#e0b0a5'][i%3];g.beginPath();g.arc(Math.sin(i*12.9898)*30,6+Math.cos(i*78.233)*19,2.4,0,7);g.fill()}}),
+ meatT('手羽先',398,'5518','#f1efe6','手羽先',g=>{[[-24,-2,17,8,-.5],[0,-8,17,8,.3],[24,-2,17,8,-.2],[-10,14,17,8,.4],[18,16,17,8,-.4]].forEach(a=>blob(g,a[0],a[1],a[2],a[3],a[4],'#c27a2e','#e3a85a'))}),
+ meatT('焼肉カルビ',1280,'6629','#26262a','カルビ',g=>{[[-16,-2,.3],[8,4,-.2],[-2,14,.1]].forEach(a=>{g.save();g.translate(a[0],a[1]);g.rotate(a[2]);g.fillStyle='#b3202a';rr(g,-26,-9,52,18,6);g.fill();g.fillStyle='#f3c8c8';g.fillRect(-22,-4,44,1.6);g.fillRect(-22,2,44,1.6);g.restore()})}),
+ meatT('和牛ステーキ',3980,'7704','#26262a','和牛',g=>{blob(g,0,4,36,21,.12,'#9b1b25','#c2414b');g.strokeStyle='rgba(255,235,235,.7)';g.lineWidth=1.3;[[-20,0,-6,8],[-8,-8,10,-2],[6,6,22,14],[-14,12,2,16]].forEach(a=>{g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(a[2],a[3]);g.stroke()});g.fillStyle='#d9a521';g.beginPath();g.arc(32,-14,9,0,7);g.fill();txt(g,'A5',32,-14,8,'#3a2a08',900)})
+];
+const wbot=g=>{const gr=g.createLinearGradient(0,-17,0,17);gr.addColorStop(0,'#2f5a3a');gr.addColorStop(.5,'#3f7a4a');gr.addColorStop(1,'#1f3f28');g.fillStyle=gr;rr(g,-60,-17,92,34,10);g.fill();rr(g,28,-7,34,14,5);g.fill();g.fillStyle='#7a1620';rr(g,50,-8,14,16,3);g.fill()};
+const wine=RT('ワイン',2480,128,38,'#fff','8890',{x:-14,y:-2,w:34,h:12},{x:-48,y:-6},g=>{wbot(g);g.fillStyle='#f3ecd8';g.fillRect(-42,-17,50,34);g.save();g.translate(-17,0);g.rotate(Math.PI/2);'ワイン'.split('').forEach((c,i)=>txt(g,c,0,-10+i*10,10,'#5a1a22',900));g.restore()},
+ {m:1.7,k:220,z:.75,sil:g=>{rr(g,-60,-17,92,34,10);g.fill();rr(g,28,-7,34,14,5);g.fill()},back:g=>{wbot(g);g.fillStyle='#f6f3ea';g.fillRect(-42,-17,50,34);bars(g,-14,-2,34,12)}});
+const gift=RT('ギフト菓子',2980,92,66,'#1b1b1d','9167',bcf(92,66),{x:22,y:-20},g=>{rr(g,-46,-33,92,66,6);g.fillStyle='#1b1b1d';g.fill();g.fillStyle='#d9a521';g.fillRect(-46,-5,92,10);g.fillRect(-5,-33,10,66);g.beginPath();g.ellipse(-12,-9,12,8,-.5,0,7);g.fill();g.beginPath();g.ellipse(12,-9,12,8,.5,0,7);g.fill();txt(g,'ギフト',-24,22,10,'#d9a521',900)});
+[...MEATS,wine,gift].forEach(t=>{t.fr=mk(t.w,t.h,t.front);t.bk=mk(t.w,t.h,t.back);t.sh=shadowOf(t.sil,t.w,t.h);TYPES.push(t)});
+const RN={'牛こま切れ':'牛肉こま切れ','豚バラ':'豚バラ薄切り','合いびき肉':'合挽肉','焼肉カルビ':'牛カルビ(焼肉用)','和牛ステーキ':'和牛ステーキ肉','ワイン':'ワイン(赤)','ギフト菓子':'ギフト菓子詰合せ','おにぎり':'おにぎり(梅)','お茶2L':'緑茶2L','弁当':'唐揚げ弁当','カップ麺':'カップ麺(醤油)','TWIGS':'チョコスナック','ほ・へ・と・み':'天然水','ボールアイス':'ボールアイス','ギョーザ':'冷凍ギョーザ','カルボナーラ':'パスタ(カルボナーラ)'};
 TYPES.forEach(t=>{t.rn=RN[t.n]||t.n});
 const glint=mk(30,30,g=>{const r=g.createRadialGradient(0,0,0,0,0,15);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(-15,-15,30,30)});
 const dI=(c,x,y)=>ctx.drawImage(c,x||-c.width/SR/2,y||-c.height/SR/2,c.width/SR,c.height/SR);
@@ -200,7 +232,7 @@ const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.wid
 function hit(it,x,y){const sc=1+.12*it.h,c=Math.cos(-it.a),s=Math.sin(-it.a),dx=x-it.x,dy=y-it.y,lx=(dx*c-dy*s)/sc,ly=(dx*s+dy*c)/sc;return Math.abs(lx)<it.ty.w/2+8&&Math.abs(ly)<it.ty.h/2+8}
 cv.addEventListener('pointerdown',e=>{if(!started||ptr!==null)return;const[x,y]=pos(e);
  if(menuIt&&menuIt.sm&&mt>.5){const kx=x-28,ky=y-314,kc=Math.floor(kx/104),kr=Math.floor(ky/38);if(kx>=0&&ky>=0&&kc<3&&kr<4&&kx%104<96&&ky%38<34){key(kr*3+kc);return}}
- if(menuIt&&!menuIt.sm&&mt>.5){const cx=x-22,cy=y-278,ci=Math.floor(cx/108),ri=Math.floor(cy/98);if(cx>=0&&cy>=0&&ci<3&&ri<2&&cx%108<100&&cy%98<90){pick(ri*3+ci);return}}
+ if(menuIt&&!menuIt.sm&&mt>.5){const cx=x-20,cy=y-270,ci=Math.floor(cx/81),ri=Math.floor(cy/52);if(cx>=0&&cy>=0&&ci<4&&ri<4&&cx%81<78&&cy%52<48){const k=ri*4+ci;if(k<PRODUCE.length)pick(k);return}}
  for(let i=items.length-1;i>=0;i--){const it=items[i];if(!it.fly&&hit(it,x,y)){ptr={id:e.pointerId,x,y,lx:x,t0:performance.now(),mv:0,vx:0};cv.setPointerCapture(e.pointerId);held=it;it.held=true;it.pk=false;if(menuIt===it)menuIt=null;{const c=Math.cos(-it.a),s=Math.sin(-it.a),dx=x-it.x,dy=y-it.y,lx=dx*c-dy*s,ly=dx*s+dy*c;it.r=Math.hypot(lx,ly)>Math.min(it.ty.w,it.ty.h)*.3?[lx,ly]:null}items.push(items.splice(i,1)[0]);sfx.grab(it.ty.m);trauma=Math.min(1,trauma+.05);break}}});
 cv.addEventListener('pointermove',e=>{if(!ptr||e.pointerId!==ptr.id)return;const[x,y]=pos(e);ptr.mv+=Math.hypot(x-ptr.x,y-ptr.y);ptr.vx=lerp(ptr.vx,(x-ptr.lx)*60,.35);ptr.lx=x;ptr.x=x;ptr.y=y;
  const v=ptr.vx;if(held&&Math.abs(v)>250)held.w+=Math.sign(v)*(Math.abs(v)-250)*.0035/(held.ty.m*.8+.2)});
@@ -277,8 +309,8 @@ function draw(){const g=ctx,sx=cv.width/W,sy=cv.height/H,k=trauma*trauma*RM,n=q=
  if(menuIt&&menuIt.sm){const e=eOC(mt);g.save();g.globalAlpha=e;g.translate(0,(1-e)*24);g.fillStyle='rgba(12,16,20,.9)';rr(g,12,246,336,234,16);g.fill();g.textAlign='center';g.textBaseline='middle';g.font='600 11px '+FONT;g.fillStyle=kmt>0?'#ff9a8a':'#9fb3c4';g.fillText(kmt>0?kmsg:'4桁の商品コードを入力',180,259);
   for(let i=0;i<4;i++){g.fillStyle=kmt>0?'#5a2320':'#232c33';rr(g,80+i*52,268,44,38,8);g.fill();if(ki[i]){g.fillStyle='#fff';g.font='700 24px '+MONO;g.fillText(ki[i],102+i*52,288)}}
   ['1','2','3','4','5','6','7','8','9','⌫','0','C'].forEach((l,i)=>{const cx=28+(i%3)*104,cy=314+((i/3)|0)*38;g.fillStyle='#2a343c';rr(g,cx,cy,96,34,9);g.fill();g.fillStyle='#e6edf3';g.font='700 18px '+MONO;g.fillText(l,cx+48,cy+18)});g.restore()}
- if(menuIt&&!menuIt.sm){const e=eOC(mt);g.save();g.globalAlpha=e;g.translate(0,(1-e)*24);g.fillStyle='rgba(12,16,20,.86)';rr(g,12,252,336,218,16);g.fill();g.textAlign='center';g.textBaseline='middle';g.font='600 11px '+FONT;g.fillStyle='#9fb3c4';g.fillText('選択 ＞ 青果　同じ商品をタップ',180,266);
-  PRODUCE.forEach((p,i)=>{const cx=22+(i%3)*108,cy=278+((i/3)|0)*98;g.fillStyle='#232c33';rr(g,cx,cy,100,90,12);g.fill();g.save();g.translate(cx+50,cy+38);const sc=Math.min(1,74/Math.max(p.w,p.h));g.scale(sc,sc);g.drawImage(p.fr,-p.fr.width/SR/2,-p.fr.height/SR/2,p.fr.width/SR,p.fr.height/SR);g.restore();g.font='600 12px '+FONT;g.fillStyle='#e6edf3';g.fillText(p.n,cx+50,cy+78)});g.restore()}
+ if(menuIt&&!menuIt.sm){const e=eOC(mt);g.save();g.globalAlpha=e;g.translate(0,(1-e)*24);g.fillStyle='rgba(12,16,20,.88)';rr(g,12,246,336,238,16);g.fill();g.textAlign='center';g.textBaseline='middle';g.font='600 11px '+FONT;g.fillStyle='#9fb3c4';g.fillText('選択 ＞ 青果　同じ商品をタップ',180,259);
+  PRODUCE.forEach((p,i)=>{const cx=20+(i%4)*81,cy=270+((i/4)|0)*52;g.fillStyle='#232c33';rr(g,cx,cy,78,48,10);g.fill();g.save();g.translate(cx+39,cy+19);const sc=Math.min(1,52/p.w,31/p.h);g.scale(sc,sc);g.drawImage(p.fr,-p.fr.width/SR/2,-p.fr.height/SR/2,p.fr.width/SR,p.fr.height/SR);g.restore();g.fillStyle='#e6edf3';g.font='600 10px '+FONT;const tw=g.measureText(p.n).width;if(tw>72)g.font='600 '+(10*72/tw).toFixed(1)+'px '+FONT;g.fillText(p.n,cx+39,cy+40)});g.restore()}
  // laser
  const th=4+6*laser,hot=ss(.2,1,laser),col='rgb(255,'+((70+185*hot)|0)+','+((50+205*hot*hot)|0)+')';
  g.globalAlpha=.25+.3*laser;g.fillStyle=col;g.fillRect(18,LY-14-th,324,28+th*2);g.globalAlpha=1;g.fillStyle=col;g.fillRect(18,LY-th/2,324,th);
@@ -303,7 +335,7 @@ function frame(t){requestAnimationFrame(frame);const rd=(t-last)/1000||0,dt=Math
 requestAnimationFrame(frame);
 
 // ---- round flow & receipts (with discounts) ----
-const LOG={},DL={},DN={},dq=[],NAME='ピッ！セルフレジ',TT=[[0,'レジ見習い'],[9000,'新人店員'],[17000,'ベテランパート'],[25000,'レジ職人'],[33000,'レジ神']],yn=n=>(n<0?'-':'')+'¥'+Math.abs(n).toLocaleString();let lastL=null;
+const LOG={},DL={},DN={},dq=[],NAME='ピッ！セルフレジ',TT=[[0,'初心者'],[9000,'買い物上手'],[17000,'常連さん'],[25000,'レジ名人'],[33000,'レジ神']],yn=n=>(n<0?'-':'')+'¥'+Math.abs(n).toLocaleString();let lastL=null;
 function reset(){demo=false;items.length=0;spawnT.length=0;dq.length=0;lastL=null;for(const o of[LOG,DL,DN])for(const k in o)delete o[k];combo=count=total=shown=perf=maxC=0;hidLast=prLast=smLast=false;smGap=0;menuIt=null;timeLeft=60;lastScan=clock;label=null;trauma=0;started=false;cdT=3;cdN=0;goT=0;ptr=null;held=null;if(AC)AC.resume();for(let i=0;i<4;i++)spawn(i);apiStart()}
 function rcData(){const d=new Date(),p=n=>String(n).padStart(2,'0'),rows=[];let ds=0;
  for(const t of TYPES.concat(PRODUCE))if(LOG[t.n]){rows.push([(t.rn||t.n)+' ×'+LOG[t.n],t.price*LOG[t.n]]);if(DL[t.n]){rows.push(['割引（'+DN[t.n]+'点）',-DL[t.n],1]);ds+=DL[t.n]}}
@@ -370,8 +402,8 @@ async function showRank(sc,fresh){rkScope=sc;$('rk').classList.add('on');$('rt1'
 $('rt1').onclick=()=>showRank('day');$('rt2').onclick=()=>showRank('all');$('rx').onclick=()=>$('rk').classList.remove('on');$('rkb').onclick=e=>{e.stopPropagation();showRank('day')};
 $('hwb').onclick=e=>{e.stopPropagation();$('hw').classList.add('on')};$('hx').onclick=()=>$('hw').classList.remove('on');
 // ---- share text (hashtag has no "！" so it stays a link on X/LINE) ----
-const SHARE_TAG='#ピッ_セルフレジ',SHARE_MSG='';
-function shareText(){const r=LR;return `ピッ！セルフレジ－リザルト－\nSCORE：${score(r.count,r.perf,r.maxC).toLocaleString()} / RANK：${r.tt}\n・さばいた数：${r.count}\n・MAXコンボ：${r.maxC}\n${SHARE_MSG?SHARE_MSG+'\n':''}${location.href.split('#')[0]}\n${SHARE_TAG}`}
+const SHARE_TAG='#ピッセルフレジ',SHARE_MSG='';
+function shareText(){const r=LR;return `ピッ！セルフレジ-リザルト\nSCORE: ${score(r.count,r.perf,r.maxC).toLocaleString()} / RANK: ${r.tt}\n・さばいた数：${r.count}\n・MAXコンボ：${r.maxC}\n${SHARE_MSG?SHARE_MSG+'\n':''}${location.href.split('#')[0]}\n${SHARE_TAG}`}
 // ---- audio: if the context is stuck (iOS interruptions), rebuild it on the next touch ----
 let waking=false;async function wake(){if(!AC||waking)return;waking=true;try{if(AC.state!=='running'){await Promise.race([AC.resume(),new Promise(r=>setTimeout(r,250))]);if(AC.state!=='running'){try{AC.close()}catch(e){}initA()}}}catch(e){}waking=false}
 ['pointerdown','touchend','click'].forEach(e=>addEventListener(e,wake,true));document.addEventListener('visibilitychange',()=>{if(!document.hidden)wake()});
