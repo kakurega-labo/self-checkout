@@ -49,11 +49,11 @@ input{-webkit-user-select:text;user-select:text}.nk{display:flex;gap:6px;margin-
 <div id='dp'><div class='rb'><h2 class='rtt'>難易度</h2><div id='dpl'></div><button id='dx' class='cl'>閉じる</button></div></div>
 <div id='hw'><div class='rb'><h2 class='rtt'>遊び方</h2><div id='hwl'>
 <p>制限時間は60秒。さばいた点数とパーフェクトの数で、称号とランキングが決まります。</p>
-<h3>難易度</h3><ul><li>初級（屋台）：判定が広め。数をこなそう</li><li>中級（スーパー）：いつものレジ</li><li>上級（百貨店）：判定がせまくなり、金額の高い商品ほど高得点</li><li>超上級（ブランドショップ）：ほぼ真っすぐでないと読めない高級品ぞろい（準備中）</li><li>お店ごとに、レジも商品も変わります</li></ul>
+<h3>難易度</h3><ul><li>初級（屋台）：判定が広め。数をこなそう</li><li>中級（スーパー）：いつものレジ</li><li>上級（百貨店）：判定がせまくなり、金額の高い商品ほど高得点</li><li>超上級（ブランドショップ）：ほぼ真っすぐでないと読めない高級品。防犯タグを外してから通す。付けたまま通すと減点。かごが空になってから次のお客様</li><li>お店ごとに、レジも商品も変わります</li></ul>
 <h3>1. 取り出す</h3><p>カゴの商品を指でつかんで、持ち上げます。</p>
 <h3>2. バーコードを探す</h3><p>商品をタップすると裏返ります。バーコードの面は商品によって違います。端をつかんで動かすか、横に振ると、商品が回ります。</p>
 <h3>3. レーザーに通す</h3><p>バーコードがレーザーと水平になるように向けて通します。速く読めるほどパーフェクト。「ピッ」と鳴ったら指を離すと、袋へ飛んでいきます。</p>
-<h3>こんな商品も</h3><ul><li>フィルムがかかっている：じっと押さえてめくる</li><li>バーコードがない(青果)：上の「選択」の枠へ運んで離し、同じ商品をタップ</li><li>汚れて読めない：上の「手入力」の枠へ運んで離し、バーコードの下にある4桁の商品コードを入力</li><li>割引シール：バーコードの上のシールを通すと、割引になります</li></ul>
+<h3>こんな商品も</h3><ul><li>フィルムがかかっている：じっと押さえてめくる</li><li>バーコードがない(青果)：上の「選択」の枠へ運んで離し、同じ商品をタップ</li><li>汚れて読めない：上の「手入力」の枠へ運んで離し、バーコードの下にある4桁の商品コードを入力</li><li>割引シール：バーコードの上のシールを通すと、割引になります</li><li>防犯タグ（超上級）：上の「タグ外し」の枠で、じっと押さえて外す。付けたまま通すと誤スキャンで減点。汚れたバーコードは6桁のコードを入力</li></ul>
 <h3>コンボ</h3><p>パーフェクトかGOODが続くと、レジの音が上がっていきます。3秒あくとコンボは切れます。</p>
 </div><button id='hx' class='cl'>閉じる</button></div></div>
 <script>
@@ -387,6 +387,7 @@ PT({n:'リング',rn:'ジュエリーケース',price:198000,w:72,h:72,m:.7,k:34
 POOLS[1]=['ラムネ','たこ焼き','フランクフルト','焼きそば','りんご飴','チョコバナナ','かき氷','わたあめ','きつね面','水ヨーヨー','金魚(袋)'].map(n=>STALL.find(t=>t.n===n));
 POOLS[3]=['ハンカチ','ソックス','和菓子','茶缶','焼き菓子','口紅','ネクタイ','ホールケーキ','化粧水','ハートチョコ'].map(n=>DEPT.find(t=>t.n===n));
 POOLS[4]=['長財布','サングラス','香水','スカーフ','万年筆','スニーカー','腕時計','ハンドバッグ','リング'].map(n=>BR.find(t=>t.n===n));
+POOLS[4].forEach((t,i)=>t.code6=t.code+['27','54','08','63','91','35','46','72','19'][i]); // 超上級は6桁の商品コード
 TYPES.push(...STALL,...DEPT,...BR);
 const glint=mk(30,30,g=>{const r=g.createRadialGradient(0,0,0,0,0,15);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(-15,-15,30,30)});
 const dI=(c,x,y)=>ctx.drawImage(c,x||-c.width/SR/2,y||-c.height/SR/2,c.width/SR,c.height/SR);
@@ -463,6 +464,7 @@ const sfx={
  pipi:()=>{ping(pf(0)*1.5,.12,.05);ping(pf(0)*1.5,.12,.05,.08);ping(pf(0)*1.5,.14,.07,.16)},
  bu:()=>{if(!AC||demo)return;const t=AC.currentTime;osc('sawtooth',110,t,.14,.2);osc('sawtooth',112,t,.14,.2);osc('sawtooth',110,t+.2,.14,.2)},
  whoosh:()=>{if(!AC||demo)return;nz(AC.currentTime,.18,.22,'bandpass',900,.8)},
+ alarm:()=>{if(!AC||demo)return;const t=AC.currentTime;[0,.14,.28].forEach(d=>{osc('square',880,t+d,.1,.22);osc('square',660,t+d+.07,.07,.2)})},
  pof:()=>{if(!AC||demo)return;osc('sine',200,AC.currentTime,.09,.3,90)},peel:p=>{if(!AC||demo)return;nz(AC.currentTime,.05,.12,'highpass',2000*jit()+p*3000,1)}};
 // ---- state ----
 const items=[],P=new Float32Array(128*7);let pi=0;
@@ -471,7 +473,7 @@ let demo=true,smGap=0,ki='',kmsg='',kmt=0,smLast=false,rf=0,prLast=false,menuIt=
 const SLOTS=[[84,548],[180,566],[272,548],[130,610],[236,612]];
 const pk=el=>{const L=POOLS[DIFF];return L[(Math.random()*Math.min(L.length,el<12?3:el<28?7:99))|0]};
 function spawn(i){const s=SLOTS[i%SLOTS.length],el=demo?30:60-timeLeft,pr=!demo&&DIFF===2&&el>=12&&!prLast&&Math.random()<(el<35?.14:.2),ty=pr?PRODUCE[(Math.random()*PRODUCE.length)|0]:pk(el),hd=!pr&&!demo&&!ez()&&el>=20&&!hidLast&&Math.random()<(el<40?.2:.34);prLast=pr;hidLast=hd;const r0=Math.random(),dc=!pr&&!hd&&(DIFF===2||DIFF===3)&&el>=8&&r0<.22,sm=!demo&&!ez()&&!pr&&!hd&&!dc&&!smLast&&el>=15&&(smGap>=8||Math.random()<.12),fs0=ty.bf===0&&Math.random()<.5?1:0;smLast=sm;smGap=sm?0:smGap+1;
- items.push({ty,hid:hd,pl:hd?0:1,dc,sm,ds:dc?Math.floor(ty.price*.2):0,x:s[0],y:s[1]-20,vx:0,vy:0,a:(Math.random()-.5)*5.5,w:0,h:1,hv:0,fl:fs0,ft:fs0,fv:0,held:false,sc:false,fly:0,sx:0,sy:0,P:0,ct:0,miss:0,tried:0,bt:0,near:false})}
+ items.push({ty,tag:!demo&&DIFF===4&&Math.random()<.75?1:0,tgp:0,ban:0,hid:hd,pl:hd?0:1,dc,sm,ds:dc?Math.floor(ty.price*.2):0,x:s[0],y:s[1]-20,vx:0,vy:0,a:(Math.random()-.5)*5.5,w:0,h:1,hv:0,fl:fs0,ft:fs0,fv:0,held:false,sc:false,fly:0,sx:0,sy:0,P:0,ct:0,miss:0,tried:0,bt:0,near:false})}
 function burst(x,y,n,sp,ang,spread){for(let k=0;k<n;k++){const o=(pi++%128)*7,a=ang+(Math.random()-.5)*spread,v=sp*(.4+Math.random()*.6);P[o]=x;P[o+1]=y;P[o+2]=Math.cos(a)*v;P[o+3]=Math.sin(a)*v;P[o+4]=P[o+5]=.35+Math.random()*.3;P[o+6]=1.5+Math.random()*2}}
 // ---- input ----
 const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H]};
@@ -492,7 +494,9 @@ document.getElementById('start').addEventListener('click',function(){try{navigat
 const $=id=>document.getElementById(id);let LR=null;
 // ---- simulation ----
 function spring(v,vel,tg,k,z,dt){vel+=(-k*(v-tg)-2*z*Math.sqrt(k)*vel)*dt;return[v+vel*dt,vel]}
-function judge(it){const g=it.ct<T.perfect?0:it.ct<T.good?1:2,names=['PERFECT!','GOOD','OK'];
+function badScan(it){mis++;combo=0;it.P=0;it.ct=0;it.miss=0;it.tried=0;it.ban=clock+1.1;it.near=true;sfx.alarm();trauma=Math.min(1,trauma+.6);rf=.45;hs=Math.max(hs,.05);label={s:'タグ付き！ -'+MISP,t:0,c:'#ff6a5a'};burst(it.x,LY,10,220,-Math.PI/2,Math.PI*1.4);lastScan=clock}
+function judge(it){if(it.tag&&!demo){badScan(it);return false}
+ const g=it.ct<T.perfect?0:it.ct<T.good?1:2,names=['PERFECT!','GOOD','OK'];
  it.sc=true;hint=1;lastScan=clock;
  if(g<2){const s=SC[combo%8];ping(pf(s),.34);if(combo%8===7){[0,4,7,12].forEach((q,i)=>ping(pf(q+12),.22,.1,.05*i+.1));trauma=Math.min(1,trauma+.6);hs=.09;slowT=slowD=.22;flash=.6;burst(W/2,300,24,260,-Math.PI/2,2.4)}combo++;if(combo>maxC)maxC=combo}
  else ping(pf(SC[combo%8]),.3);
@@ -503,16 +507,17 @@ function step(dt){if(demo)demoStep(dt);if(timeLeft>0&&!demo){timeLeft-=dt;if(tim
  for(let n=spawnT.length-1;n>=0;n--){spawnT[n]-=dt;if(spawnT[n]<=0){spawnT.splice(n,1);spawn((count+items.length)%5)}}
  for(let k=items.length-1;k>=0;k--){const it=items[k],ty=it.ty;
   if(it.fly){it.fly+=dt;const u=Math.min(it.fly/.36,1),e=eOC(u);it.x=lerp(it.sx,BAG.x,e);it.y=lerp(it.sy,BAG.y,e);it.a+=it.w*dt*(1-u);it.h=Math.sin(u*Math.PI)*.9;
-   if(u>=1){items.splice(k,1);count++;total+=ty.price;LOG[ty.n]=(LOG[ty.n]||0)+1;if(it.dc){dq.push([.45,it.ds]);DL[ty.n]=(DL[ty.n]||0)+it.ds;DN[ty.n]=(DN[ty.n]||0)+1}lastL={s:(ty.rn||ty.n)+' ¥'+ty.price,d:it.dc?it.ds:0,t:2.8};totBump=.35;bagV+=2.2;sfx.pof();trauma=Math.min(1,trauma+.05);spawnT.push(.35);burst(BAG.x,BAG.y,5,90,-Math.PI/2,2)}continue}
+   if(u>=1){items.splice(k,1);count++;total+=ty.price;LOG[ty.n]=(LOG[ty.n]||0)+1;if(it.dc){dq.push([.45,it.ds]);DL[ty.n]=(DL[ty.n]||0)+it.ds;DN[ty.n]=(DN[ty.n]||0)+1}lastL={s:(ty.rn||ty.n)+' ¥'+ty.price,d:it.dc?it.ds:0,t:2.8};totBump=.35;bagV+=2.2;sfx.pof();trauma=Math.min(1,trauma+.05);if(DIFF===4&&!demo){if(!items.length&&!spawnT.length){const nb=3+((Math.random()*3)|0);for(let q=0;q<nb;q++)spawnT.push(.6+q*.14)}}else spawnT.push(.35);burst(BAG.x,BAG.y,5,90,-Math.PI/2,2)}continue}
   let r=spring(it.h,it.hv,it.held?1:0,260,.5,dt);const ph=it.h;it.h=r[0];it.hv=r[1];if(ph>.15&&it.h<=.15&&it.hv<0){if(!it.q)sfx.put(ty.m);it.q=0;trauma=Math.min(1,trauma+.05)}
   r=spring(it.fl,it.fv,it.ft||0,300,.6,dt);it.fl=r[0];it.fv=r[1];
   if(it.held&&ptr){const tx=ptr.x,tyy=ptr.y-T.offset;let q=spring(it.x,it.vx,tx,ty.k,ty.z,dt);it.x=q[0];it.vx=q[1];q=spring(it.y,it.vy,tyy,ty.k,ty.z,dt);it.y=q[0];it.vy=q[1];if(it.r){const c=Math.cos(it.a),s=Math.sin(it.a),rx=it.r[0]*c-it.r[1]*s,ry=it.r[0]*s+it.r[1]*c;it.w=clamp(it.w+(rx*(tyy-it.y)-ry*(tx-it.x))*(.02/ty.m)*dt,-10,10)}}
   else if(it.pk){let q=spring(it.x,it.vx,it.sm?189:99,300,.7,dt);it.x=q[0];it.vx=q[1];q=spring(it.y,it.vy,124,300,.7,dt);it.y=q[0];it.vy=q[1]}else{it.x+=it.vx*dt;it.y+=it.vy*dt;const f=Math.exp(-6*dt);it.vx*=f;it.vy*=f;if(it.y<228&&!it.held)it.vy+=(250-it.y)*30*dt;it.x=clamp(it.x,34,326);if(it.y>620)it.y=620}
   it.a+=it.w*dt;it.w*=Math.exp(-(it.held?3.5:2)*dt);
   const da=it.a-Math.PI*Math.round(it.a/Math.PI);if(Math.abs(it.w)<1.3&&Math.abs(da)<.3)it.a-=da*(1-Math.exp(-14*dt));
+  if(it.tag&&it.held&&!menuIt&&it.x>52&&it.x<146&&it.y>90&&it.y<156){it.tgp+=dt/.6;it.tn=(it.tn||0)-dt;if(it.tn<=0){it.tn=.08;sfx.peel(it.tgp*.8)}if(it.tgp>=1){it.tag=0;it.tgp=0;ping(pf(14)*2,.2,.06);ping(pf(19)*2,.16,.08,.06);burst(it.x,it.y,10,170,-Math.PI/2,3);trauma=Math.min(1,trauma+.12)}}else if(it.tgp>0)it.tgp=Math.max(0,it.tgp-1.5*dt);
   // scan
   if(it.held&&it.pl<1&&Math.abs(it.fl-(ty.bf===0?0:1))<.15){if(Math.hypot(it.vx,it.vy)<70){it.pl=Math.min(1,it.pl+dt/.6);it.pn=(it.pn||0)-dt;if(it.pn<=0){it.pn=.07;sfx.peel(it.pl)}if(it.pl>=1){ping(pf(12)*2,.18,.05);burst(it.x,it.y,6,140,-Math.PI/2,2.6);trauma=Math.min(1,trauma+.08)}}else it.pl=Math.max(0,it.pl-.5*dt)}
-  if(it.held&&!it.sc&&Math.abs(it.fl-(ty.bf===0?0:1))<.15&&it.pl>=1&&ty.bc&&!it.sm){const sc=1+.12*it.h,c=Math.cos(it.a),s=Math.sin(it.a),b=ty.bc,bx=it.x+(b.x*c-b.y*s)*sc,by=it.y+(b.x*s+b.y*c)*sc;
+  if(it.held&&!it.sc&&Math.abs(it.fl-(ty.bf===0?0:1))<.15&&it.pl>=1&&ty.bc&&!it.sm&&clock>=it.ban){const sc=1+.12*it.h,c=Math.cos(it.a),s=Math.sin(it.a),b=ty.bc,bx=it.x+(b.x*c-b.y*s)*sc,by=it.y+(b.x*s+b.y*c)*sc;
    const d=Math.abs(da),zr=T.zone*Math.PI/180*ty.tol*TM(),fr=T.fall*Math.PI/180*ty.tol*TM(),A=d<zr?1:1-ss(zr,fr,d),dy=Math.abs(by-LY),hh=b.h/2*sc+18,C=dy<hh&&bx>24&&bx<336?1-.5*(dy/hh)*(dy/hh):0,rate=T.rate*A*C;
    if(rate>.05){it.P+=rate*dt;it.ct+=dt;it.miss=0;it.tried+=dt;it.near=false;it.bt-=dt;if(it.bt<=0){ping(pf(it.P*3)*.7,.07,.04);it.bt=lerp(.18,.04,it.P*it.P)}
     if(it.P>=1)judge(it)}
@@ -532,9 +537,10 @@ function drawItem(it){const ty=it.ty,u=it.fly?Math.min(it.fly/.36,1):0,sc=(1+.12
  if((it.fl>.5)===(ty.bf!==0)&&it.pl<1){const b=ty.bc,fw=(b.w+8)*(1-it.pl),x=b.x-b.w/2-4,y0=b.y-b.h/2-4;ctx.fillStyle='rgba(222,226,230,.95)';ctx.fillRect(x,y0,fw,b.h+8);ctx.strokeStyle='rgba(120,128,136,.55)';ctx.lineWidth=1;ctx.beginPath();for(let i=1;i<4;i++){ctx.moveTo(x+fw*i/4,y0);ctx.lineTo(x+fw*i/4+3,y0+b.h+8)}ctx.stroke();ctx.fillStyle='rgba(255,255,255,.9)';ctx.fillRect(x+fw-3,y0,3+4*Math.sin(Math.PI*it.pl),b.h+8)}
  {const b=ty.bc,f=ty.fs||{x:0,y:0};if(it.dc&&(it.fl>.5)===(ty.bf!==0))ctx.drawImage(STB,b.x-b.w/2-5,b.y-b.h/2-4,b.w+10,b.h+4);if(it.dc&&it.fl<=.5)ctx.drawImage(STF,f.x-24,f.y-14,48,28)}
  if(it.sm&&(it.fl>.5)===(ty.bf!==0)){const b=ty.bc;ctx.fillStyle='rgba(240,238,230,.72)';ctx.fillRect(b.x-b.w/2,b.y-b.h/2,b.w,b.h);ctx.fillStyle='rgba(96,66,32,.66)';[[-.3,-.1,.3],[.25,.2,.26],[.05,-.25,.2],[-.05,.3,.18],[.4,-.2,.16]].forEach(o=>{ctx.beginPath();ctx.ellipse(b.x+o[0]*b.w,b.y+o[1]*b.h,o[2]*b.w,o[2]*b.h*1.1,.5,0,7);ctx.fill()})}
- if(it.pl>=1&&ty.code&&(it.fl>.5)===(ty.bf!==0)){const b=ty.bc;ctx.fillStyle='#fff';ctx.fillRect(b.x-b.w/2,b.y+b.h/2,b.w,12);ctx.fillStyle='#222';ctx.font='800 10px '+MONO;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(ty.code,b.x,b.y+b.h/2+6.5)}
+ if(it.pl>=1&&ty.code&&(it.fl>.5)===(ty.bf!==0)){const b=ty.bc;const cs=DIFF===4&&ty.code6||ty.code,bw=Math.max(b.w,cs.length*6.4+4);ctx.fillStyle='#fff';ctx.fillRect(b.x-bw/2,b.y+b.h/2,bw,12);ctx.fillStyle='#222';ctx.font='800 10px '+MONO;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(cs,b.x,b.y+b.h/2+6.5)}
  ctx.restore();
  ctx.save();ctx.globalAlpha=.2;ctx.translate(it.x-ty.w*.16*sc,it.y-ty.h*.2*sc);ctx.drawImage(glint,-15,-15,30,30);ctx.restore();
+ if(it.tag&&!it.fly){const tx=Math.min(ty.w/2-14,26)*sc,tyy=-Math.min(ty.h/2-12,22)*sc;ctx.save();ctx.translate(it.x,it.y);ctx.rotate(it.a);ctx.translate(tx,tyy);ctx.rotate(-.35+.05*Math.sin(clock*9));ctx.fillStyle='#2b2f36';rr(ctx,-9,-13,18,26,5);ctx.fill();ctx.fillStyle='#d8433a';ctx.beginPath();ctx.arc(0,-4,4,0,7);ctx.fill();ctx.fillStyle='#8a929c';ctx.fillRect(-1.5,6,3,7);if(it.tgp>0){ctx.strokeStyle='#7dffae';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,17,-Math.PI/2,-Math.PI/2+Math.PI*2*it.tgp);ctx.stroke()}ctx.restore()}
  if(it.sc&&!it.fly){ctx.strokeStyle='rgba(120,255,170,'+(.55+.3*Math.sin(clock*12))+')';ctx.lineWidth=3;ctx.beginPath();ctx.arc(it.x,it.y,Math.max(ty.w,ty.h)/2*sc+4,0,7);ctx.stroke()}}
 function draw(){const g=ctx,sx=cv.width/W,sy=cv.height/H,k=trauma*trauma*RM,n=q=>(Math.sin(clock*13+q)+Math.sin(clock*23.7+q*2.1)*.5+Math.sin(clock*37.3+q*3.3)*.25)/1.75;
  g.setTransform(sx,0,0,sy,0,0);g.fillStyle='#101316';g.fillRect(0,0,W,H);
@@ -545,15 +551,15 @@ function draw(){const g=ctx,sx=cv.width/W,sy=cv.height/H,k=trauma*trauma*RM,n=q=
  // monitor HUD
  g.textAlign='left';g.textBaseline='alphabetic';g.fillStyle=hk.lab;g.font='600 11px '+FONT;g.fillText('合計',38,30);
  g.save();g.translate(38,62);g.scale(1+totBump*.5,1+totBump*.5);{const ts='¥'+Math.round(shown).toLocaleString();g.fillStyle=hk.num;g.font='700 '+(ts.length>10?22:ts.length>8?26:34)+'px '+MONO;g.fillText(ts,0,0)}g.restore();
- g.textAlign='right';g.fillStyle=hk.lab;g.font='700 20px '+MONO;g.fillText(count+'点',326,31);if(combo>1){g.fillStyle='#ffd84a';g.font='700 15px '+MONO;g.fillText('COMBO '+combo,326,52);const f=clamp(1-(clock-lastScan)/3,0,1);g.fillRect(326-90*f,58,90*f,3)}g.textAlign='center';g.fillStyle=timeLeft<10?'#ff7a6a':hk.num;g.font='700 20px '+MONO;if(!demo)g.fillText(Math.ceil(Math.max(timeLeft,0))+'s',246,31);
+ g.textAlign='right';g.fillStyle=hk.lab;g.font='700 20px '+MONO;g.fillText(count+'点',326,31);if(combo>1){g.fillStyle='#ffd84a';g.font='700 15px '+MONO;g.fillText('COMBO '+combo,326,52);const f=clamp(1-(clock-lastScan)/3,0,1);g.fillRect(326-90*f,58,90*f,3)}if(mis>0){g.fillStyle='#ff8a7a';g.font='700 12px '+MONO;g.fillText('MISS ×'+mis+'  -'+(mis*MISP),326,76)}g.textAlign='center';g.fillStyle=timeLeft<10?'#ff7a6a':hk.num;g.font='700 20px '+MONO;if(!demo)g.fillText(Math.ceil(Math.max(timeLeft,0))+'s',246,31);
  if(lastL&&lastL.t>0){g.globalAlpha=Math.min(1,lastL.t*1.5);g.textAlign='left';g.font='600 10px '+FONT;g.fillStyle=hk.sub;g.fillText(lastL.s,38,77);if(lastL.d){g.fillStyle='#ffd84a';g.fillText('割引 '+lastL.d+'円引き  -¥'+lastL.d,38+g.measureText(lastL.s).width+14,77)}g.globalAlpha=1}
  // bag
  g.save();g.translate(BAG.x,BAG.y+16);g.scale(1-bagS*.25,1+bagS*.5);SK.bag(g);g.restore();
  // items (held last)
- {[['選択',58,held&&held.ty.pr,DIFF===2],['手入力',148,held&&held.sm,DIFF>=2]].forEach(([n,x,act,vis])=>{if(!vis)return;g.fillStyle=act?'rgba(70,190,120,'+(.35+.25*Math.sin(clock*8))+')':'rgba(60,70,80,.55)';rr(g,x,106,82,34,10);g.fill();g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=1.5;g.stroke();g.textAlign='center';g.textBaseline='middle';g.fillStyle='#e8eef3';g.font='700 13px '+FONT;g.fillText(n,x+41,123)})}
+ {[['選択',58,held&&held.ty.pr,DIFF===2],['タグ外し',58,held&&held.tag,DIFF===4],['手入力',148,held&&held.sm,DIFF>=2]].forEach(([n,x,act,vis])=>{if(!vis)return;g.fillStyle=act?'rgba(70,190,120,'+(.35+.25*Math.sin(clock*8))+')':'rgba(60,70,80,.55)';rr(g,x,106,82,34,10);g.fill();g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=1.5;g.stroke();g.textAlign='center';g.textBaseline='middle';g.fillStyle='#e8eef3';g.font='700 13px '+FONT;g.fillText(n,x+41,123)})}
  for(const it of items)drawItem(it);
- if(menuIt&&menuIt.sm){const e=eOC(mt);g.save();g.globalAlpha=e;g.translate(0,(1-e)*24);g.fillStyle='rgba(12,16,20,.9)';rr(g,12,246,336,234,16);g.fill();g.textAlign='center';g.textBaseline='middle';g.font='600 11px '+FONT;g.fillStyle=kmt>0?'#ff9a8a':'#9fb3c4';g.fillText(kmt>0?kmsg:'4桁の商品コードを入力',180,259);
-  for(let i=0;i<4;i++){g.fillStyle=kmt>0?'#5a2320':'#232c33';rr(g,80+i*52,268,44,38,8);g.fill();if(ki[i]){g.fillStyle='#fff';g.font='700 24px '+MONO;g.fillText(ki[i],102+i*52,288)}}
+ if(menuIt&&menuIt.sm){const e=eOC(mt);g.save();g.globalAlpha=e;g.translate(0,(1-e)*24);g.fillStyle='rgba(12,16,20,.9)';rr(g,12,246,336,234,16);g.fill();g.textAlign='center';g.textBaseline='middle';g.font='600 11px '+FONT;g.fillStyle=kmt>0?'#ff9a8a':'#9fb3c4';g.fillText(kmt>0?kmsg:(DIFF===4?6:4)+'桁の商品コードを入力',180,259);
+  {const N=DIFF===4?6:4,bw=N===6?40:44,sp=N===6?48:52,x0=(360-(N*sp-(sp-bw)))/2;for(let i=0;i<N;i++){g.fillStyle=kmt>0?'#5a2320':'#232c33';rr(g,x0+i*sp,268,bw,38,8);g.fill();if(ki[i]){g.fillStyle='#fff';g.font='700 24px '+MONO;g.fillText(ki[i],x0+i*sp+bw/2,288)}}}
   ['1','2','3','4','5','6','7','8','9','⌫','0','C'].forEach((l,i)=>{const cx=28+(i%3)*104,cy=314+((i/3)|0)*38;g.fillStyle='#2a343c';rr(g,cx,cy,96,34,9);g.fill();g.fillStyle='#e6edf3';g.font='700 18px '+MONO;g.fillText(l,cx+48,cy+18)});g.restore()}
  if(menuIt&&!menuIt.sm){const e=eOC(mt);g.save();g.globalAlpha=e;g.translate(0,(1-e)*24);g.fillStyle='rgba(12,16,20,.88)';rr(g,12,246,336,238,16);g.fill();g.textAlign='center';g.textBaseline='middle';g.font='600 11px '+FONT;g.fillStyle='#9fb3c4';g.fillText('選択 ＞ 青果　同じ商品をタップ',180,259);
   PRODUCE.forEach((p,i)=>{const cx=20+(i%4)*81,cy=270+((i/4)|0)*52;g.fillStyle='#232c33';rr(g,cx,cy,78,48,10);g.fill();g.save();g.translate(cx+39,cy+19);const sc=Math.min(1,52/p.w,31/p.h);g.scale(sc,sc);g.drawImage(p.fr,-p.fr.width/SR/2,-p.fr.height/SR/2,p.fr.width/SR,p.fr.height/SR);g.restore();g.fillStyle='#e6edf3';g.font='600 10px '+FONT;const tw=g.measureText(p.n).width;if(tw>72)g.font='600 '+(10*72/tw).toFixed(1)+'px '+FONT;g.fillText(p.n,cx+39,cy+40)});g.restore()}
@@ -564,6 +570,8 @@ function draw(){const g=ctx,sx=cv.width/W,sy=cv.height/H,k=trauma*trauma*RM,n=q=
  if(label){const u=label.t/.7,e=1+2.7*Math.pow(clamp(label.t/.18,0,1)-1,3)+1.7*Math.pow(clamp(label.t/.18,0,1)-1,2);g.save();g.translate(W/2,150-u*40);g.scale(.4+.6*e,.4+.6*e);g.globalAlpha=1-ss(.5,1,u);g.textAlign='center';g.textBaseline='middle';g.font='italic 800 36px '+FONT;g.lineWidth=5;g.strokeStyle='rgba(0,0,0,.55)';g.strokeText(label.s,0,0);g.fillStyle=label.c;g.fillText(label.s,0,0);g.restore()}
  if(!demo&&hint&&held&&held.sc){g.textAlign='center';g.font='600 13px '+FONT;g.fillStyle='#9dffb8';g.fillText('指を離すと袋へ',W/2,236)}
  if(!demo&&held&&held.pl<1&&Math.abs(held.fl-(held.ty.bf===0?0:1))<.15){g.textAlign='center';g.font='600 13px '+FONT;g.fillStyle='#ffe9a8';g.fillText('じっと押さえてフィルムをめくる',W/2,236)}
+ if(!demo&&held&&held.tag){g.textAlign='center';g.font='600 13px '+FONT;g.fillStyle='#ff9a8a';g.fillText('防犯タグ！上の「タグ外し」の枠でじっと押さえる',W/2,216)}
+ if(!demo&&DIFF===4&&started&&!items.length){g.textAlign='center';g.font='700 15px '+FONT;g.fillStyle='rgba(255,255,255,.8)';g.fillText('次のお客様をお呼びしています…',W/2,360)}
  if(!demo&&held&&held.ty.pr){g.textAlign='center';g.font='600 13px '+FONT;g.fillStyle='#9dffb8';g.fillText('上の「選択」の枠へ運んで離す',W/2,236)}
  if(!demo&&held&&held.sm&&!held.pk&&(held.fl>.5)===(held.ty.bf!==0)){g.textAlign='center';g.font='600 13px '+FONT;g.fillStyle='#ffd0a0';g.fillText('汚れて読めない…「手入力」の枠へ',W/2,236)}
  g.setTransform(sx,0,0,sy,0,0); // overlays below are not shaken
@@ -581,23 +589,23 @@ function frame(t){requestAnimationFrame(frame);const rd=(t-last)/1000||0,dt=Math
 requestAnimationFrame(frame);
 
 // ---- round flow & receipts (with discounts) ----
-const LOG={},DL={},DN={},dq=[],NAME='ピッ！セルフレジ',TTS={1:[[0,'初心者'],[12000,'買い物上手'],[22000,'常連さん'],[32000,'レジ名人'],[42000,'レジ神']],2:[[0,'初心者'],[9000,'買い物上手'],[17000,'常連さん'],[25000,'レジ名人'],[33000,'レジ神']],3:[[0,'初心者'],[9000,'買い物上手'],[17000,'常連さん'],[25000,'レジ名人'],[33000,'レジ神']],4:[[0,'初心者'],[8000,'買い物上手'],[15000,'常連さん'],[22000,'レジ名人'],[30000,'レジ神']]},ttOf=(sc,d)=>TTS[d].filter(a=>sc>=a[0]).pop()[1],
-DFS=[null,{n:'初級',shop:'屋台',tm:1.5,cap:'判定が広め。数をこなそう'},{n:'中級',shop:'スーパー',tm:1,cap:'いつものレジ。ルールは今までどおり'},{n:'上級',shop:'百貨店',tm:.65,cap:'判定がせまく、金額の高い商品ほど高得点'},{n:'超上級',shop:'ブランドショップ',tm:.4,cap:'ほぼ真っすぐでないと読めない。高級品ぞろい'}],
-yn=n=>(n<0?'-':'')+'¥'+Math.abs(n).toLocaleString();let lastL=null,DIFF=2;const LOCK=[0,0,0,0,location.hash==='#beta4'?0:1]; // 超上級: 準備中（#beta4 を付けると試遊だけ可能。ランキング登録はサーバー側で止めてある）
+const LOG={},DL={},DN={},dq=[],NAME='ピッ！セルフレジ',TTS={1:[[0,'初心者'],[12000,'買い物上手'],[22000,'常連さん'],[32000,'レジ名人'],[42000,'レジ神']],2:[[0,'初心者'],[9000,'買い物上手'],[17000,'常連さん'],[25000,'レジ名人'],[33000,'レジ神']],3:[[0,'初心者'],[9000,'買い物上手'],[17000,'常連さん'],[25000,'レジ名人'],[33000,'レジ神']],4:[[0,'初心者'],[25000,'買い物上手'],[40000,'常連さん'],[55000,'レジ名人'],[70000,'レジ神']]},ttOf=(sc,d)=>TTS[d].filter(a=>sc>=a[0]).pop()[1],
+DFS=[null,{n:'初級',shop:'屋台',tm:1.5,cap:'判定が広め。数をこなそう'},{n:'中級',shop:'スーパー',tm:1,cap:'いつものレジ。ルールは今までどおり'},{n:'上級',shop:'百貨店',tm:.65,cap:'判定がせまく、金額の高い商品ほど高得点'},{n:'超上級',shop:'ブランドショップ',tm:.4,cap:'防犯タグ外し・誤スキャンは減点・6桁コード'}],
+yn=n=>(n<0?'-':'')+'¥'+Math.abs(n).toLocaleString();let lastL=null,DIFF=2,mis=0;const LOCK=[0,0,0,0,0];
 try{const v=+localStorage.getItem('rjDiff');if(v>=1&&v<=4&&!LOCK[v])DIFF=v}catch(e){}
 const TM=()=>demo?1:DFS[DIFF].tm,ez=()=>DIFF===1;
-function reset(){demo=false;items.length=0;spawnT.length=0;dq.length=0;lastL=null;for(const o of[LOG,DL,DN])for(const k in o)delete o[k];combo=count=total=shown=perf=maxC=0;hidLast=prLast=smLast=false;smGap=0;menuIt=null;timeLeft=60;lastScan=clock;label=null;trauma=0;started=false;cdT=3;cdN=0;goT=0;ptr=null;held=null;if(AC)AC.resume();for(let i=0;i<4;i++)spawn(i);apiStart()}
+function reset(){demo=false;items.length=0;spawnT.length=0;dq.length=0;lastL=null;for(const o of[LOG,DL,DN])for(const k in o)delete o[k];combo=count=total=shown=perf=maxC=mis=0;hidLast=prLast=smLast=false;smGap=0;menuIt=null;timeLeft=60;lastScan=clock;label=null;trauma=0;started=false;cdT=3;cdN=0;goT=0;ptr=null;held=null;if(AC)AC.resume();for(let i=0;i<4;i++)spawn(i);apiStart()}
 function rcData(){const d=new Date(),p=n=>String(n).padStart(2,'0'),rows=[];let ds=0;
  for(const t of TYPES.concat(PRODUCE))if(LOG[t.n]){rows.push([(t.rn||t.n)+' ×'+LOG[t.n],t.price*LOG[t.n]]);if(DL[t.n]){rows.push(['割引（'+DN[t.n]+'点）',-DL[t.n],1]);ds+=DL[t.n]}}
  return{date:d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日('+'日月火水木金土'[d.getDay()]+') '+p(d.getHours())+':'+p(d.getMinutes()),rows,ds,gross:total+ds,tax:Math.floor(total*10/110),dep:Math.max(1000,Math.ceil(total/1000)*1000)}}
 function finish(){started=false;menuIt=null;for(const q of dq)total-=q[1];dq.length=0;ptr=null;if(held){held.held=false;held.r=null;held=null}ping(pf(12),.3,.35);ping(pf(7),.2,.35,.08);
- const sc=score(count,perf,maxC,total,DIFF),tt=ttOf(sc,DIFF);let best=0;try{best=+localStorage.getItem('rjBestC')||0;if(maxC>best)localStorage.setItem('rjBestC',maxC)}catch(e){}
- const D=rcData();LR={tt,total,count,perf,maxC,D,d:DIFF,sc};
+ const sc=score(count,perf,maxC,total,DIFF,mis),tt=ttOf(sc,DIFF);let best=0;try{best=+localStorage.getItem('rjBestC')||0;if(maxC>best)localStorage.setItem('rjBestC',maxC)}catch(e){}
+ const D=rcData();LR={tt,total,count,perf,maxC,D,d:DIFF,sc,mis};
  const dl=(a,c)=>`<dl${c?` class='${c}'`:''}>`+a.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')+'</dl>';
  setTimeout(()=>{$('res').firstChild.innerHTML=`<div class='ty'>ご利用ありがとうございました。</div><div class='ry'>領　収　証</div><div class='sm l'>${D.date}</div>`
  +dl(D.rows.length?D.rows.map(r=>[r[2]?`<small class='dc'>${r[0]}</small>`:r[0],r[2]?`<small class='dc'>${yn(r[1])}</small>`:yn(r[1])]):[['（商品なし）','']])
  +(D.ds?dl([['（商品合計）',yn(D.gross)],['（値引合計）',yn(-D.ds)]]):'')+dl([['合　計',yn(total)]],'tot')+dl([['（内消費税等）',yn(D.tax)],['お預り',yn(D.dep)],['お釣',yn(D.dep-total)]])
- +dl([['スコア',sc.toLocaleString()],['難易度',DFS[DIFF].n],['さばいた点数',count],['パーフェクト',perf],['最大コンボ',maxC]],'scr')
+ +dl([['スコア',sc.toLocaleString()],['難易度',DFS[DIFF].n],['さばいた点数',count],['パーフェクト',perf],['最大コンボ',maxC]].concat(DIFF===4?[['誤スキャン（-'+MISP+'点）',mis+'回']]:[]),'scr')
  +`<div id='ttl'>${tt}</div><div id='best'>${maxC>best?'最大コンボ自己ベスト更新！':'最大'+best+'コンボ'}</div><div class='nk'><input id='nm' maxlength='10' enterkeyhint='done' autocomplete='off' placeholder='ニックネーム（10文字まで）' value='${NM}'><button id='reg'>登録</button></div><div class='sm note'>登録すると、ニックネームと点数がランキングに公開されます</div><div id='rmsg'></div><button id='again'>もう一回</button><button id='rkv' class='s'>ランキングを見る</button><button id='shr' class='s'>レシートを共有</button><button id='home' class='s'>タイトルへ</button>`;
  $('again').onclick=()=>{$('res').classList.remove('on');reset()};$('shr').onclick=share;$('reg').onclick=register;$('rkv').onclick=()=>{RKD=LR.d;showRank('day')};
  $('home').onclick=()=>{$('res').classList.remove('on');items.length=0;total=shown=count=combo=perf=maxC=0;timeLeft=60;lastL=null;label=null;dq.length=0;demoInit();$('start').style.display='flex'};$('res').classList.add('on')},700)}
@@ -619,9 +627,10 @@ function pick(i){const it=menuIt;if(!it)return;
  else{combo=Math.max(0,combo-1);sfx.bu();trauma=Math.min(1,trauma+.5);rf=.25}}
 // ---- manual entry (smudged barcode): read the 4 digits under the barcode, type them ----
 function key(i){const it=menuIt;if(!it||!it.sm)return;const l=['1','2','3','4','5','6','7','8','9','⌫','0','C'][i];ping(1500,.1,.03);
- if(l==='⌫'){ki=ki.slice(0,-1);return}if(l==='C'){ki='';return}if(ki.length>=4||kmt>0)return;ki+=l;if(ki.length<4)return;
- if(ki===it.ty.code){const tt=clock-it.mo;it.ct=tt<2.5?.1:tt<4.5?.4:1;menuIt=null;it.pk=false;ki='';judge(it);it.fly=.0001;it.sx=it.x;it.sy=it.y;it.w=(Math.random()<.5?-1:1)*9;sfx.whoosh();hint=0}
- else{kmsg=TYPES.some(t=>t.code===ki)?'商品が違います':'該当なし';kmt=.7;ki='';combo=Math.max(0,combo-1);sfx.bu();trauma=Math.min(1,trauma+.5);rf=.25}}
+ if(l==='⌫'){ki=ki.slice(0,-1);return}if(l==='C'){ki='';return}const NL=DIFF===4?6:4;if(ki.length>=NL||kmt>0)return;ki+=l;if(ki.length<NL)return;
+ if(ki===(DIFF===4?it.ty.code6:it.ty.code)&&it.tag){menuIt=null;it.pk=false;ki='';badScan(it);return}
+ if(ki===(DIFF===4?it.ty.code6:it.ty.code)){const tt=clock-it.mo;it.ct=tt<2.5?.1:tt<4.5?.4:1;menuIt=null;it.pk=false;ki='';judge(it);it.fly=.0001;it.sx=it.x;it.sy=it.y;it.w=(Math.random()<.5?-1:1)*9;sfx.whoosh();hint=0}
+ else{kmsg=(DIFF===4?POOLS[4].some(t=>t.code6===ki):TYPES.some(t=>t.code===ki))?'商品が違います':'該当なし';kmt=.7;ki='';combo=Math.max(0,combo-1);sfx.bu();trauma=Math.min(1,trauma+.5);rf=.25}}
 // ---- ranking (Cloudflare Pages Functions + KV; degrades gracefully when the API is absent) ----
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let PID='',NM='',TOK='',MYH='',MINE=null,rkScope='day',RKD=2;
@@ -635,18 +644,18 @@ const isBad=s=>{const n=nrm(s);return BADW.some(w=>n.includes(w))};
 async function jf(url,opt){try{const c=new AbortController(),t=setTimeout(()=>c.abort(),6000),r=await fetch(url,{...opt,signal:c.signal});clearTimeout(t);return{ok:r.ok,j:await r.json().catch(()=>null)}}catch(e){return null}}
 function apiStart(){TOK='';jf('/api/start').then(r=>{if(r&&r.ok&&r.j)TOK=r.j.t||''})}
 // server generation: v>=2 knows about difficulties. With an older server, non-中級 results must NOT be sent (they would land in the 中級 ranking).
-let SV=0;const SVP=jf('/api/start').then(r=>{SV=r&&r.ok&&r.j&&r.j.v>=2?2:1});
+let SV=0;const SVP=jf('/api/start').then(r=>{SV=r&&r.ok&&r.j&&r.j.v>=3?3:r&&r.ok&&r.j&&r.j.v>=2?2:1});
 async function register(){const el=$('nm'),msg=$('rmsg'),btn=$('reg'),name=Array.from(el.value.replace(/['"<>&]/g,'').trim()).slice(0,10).join('');
  if(!name){msg.textContent='ニックネームを入力してください';return}if(isBad(name)){msg.textContent='使えない言葉が含まれています';return}
- if(LR.d!==2){await SVP;if(SV<2){msg.style.color='#a1281c';msg.textContent='この難易度のランキングは準備中です（サーバー更新後に登録できます）';return}}
+ if(LR.d!==2){await SVP;if(SV<(LR.d===4?3:2)){msg.style.color='#a1281c';msg.textContent='この難易度のランキングは準備中です（サーバー更新後に登録できます）';return}}
  try{localStorage.setItem('rjName',name)}catch(e){}NM=name;btn.disabled=true;msg.textContent='送信中…';
- const r=await jf('/api/score',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pid:PID,name,count:LR.count,perf:LR.perf,maxC:LR.maxC,d:LR.d,y:LR.total,t:TOK})});
+ const r=await jf('/api/score',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pid:PID,name,count:LR.count,perf:LR.perf,maxC:LR.maxC,d:LR.d,y:LR.total,mx:LR.mis||0,t:TOK})});
  if(r&&r.ok&&r.j){msg.style.color='#2a7a3a';msg.textContent='登録しました！ 今日 '+(r.j.day?r.j.day+'位':'圏外')+' / 全期間 '+(r.j.all?r.j.all+'位':'圏外');MINE={n:name,sc:LR.sc,pf:LR.perf,mc:LR.maxC,d:LR.d};RKD=LR.d;showRank('day',true)}
  else{btn.disabled=false;msg.style.color='#a1281c';const e=r&&r.j&&r.j.error;msg.textContent=!r?'ランキングに接続できません':e==='ng'?'使えない言葉が含まれています':e==='token'||e==='used'?'この結果は登録できません（もう一度遊んでください）':'登録できませんでした'}}
 async function showRank(sc,fresh){rkScope=sc;const dd=RKD;$('rk').classList.add('on');[...$('rdf').children].forEach((b,i)=>b.classList.toggle('a',i+1===dd));$('rt1').classList.toggle('a',sc==='day');$('rt2').classList.toggle('a',sc==='all');$('rn').textContent=sc==='day'?'毎日0時（日本時間）にリセット／上位100位まで':'これまでのすべての記録／上位100位まで';
  const l=$('rl'),m=$('rm');l.textContent='読み込み中…';m.innerHTML='';
  if(LOCK[dd]){l.innerHTML="<div class='soon'><b>準備中</b><span>"+DFS[dd].n+'は近日公開です。<br>お楽しみに！</span></div>';return}
- if(dd!==2){await SVP;if(SV<2){l.innerHTML="<div class='soon'><b>準備中</b><span>この難易度のランキングは、<br>サーバーの更新後に利用できます。</span></div>";return}}
+ if(dd!==2){await SVP;if(SV<(dd===4?3:2)){l.innerHTML="<div class='soon'><b>準備中</b><span>この難易度のランキングは、<br>サーバーの更新後に利用できます。</span></div>";return}}
  const[r,me]=await Promise.all([jf('/api/rank?scope='+sc+'&d='+dd+(fresh?'&fresh=1':'')),MYH?jf('/api/me?scope='+sc+'&d='+dd+'&h='+MYH):null]);if(rkScope!==sc||RKD!==dd)return;
  if(!r||!r.ok||!r.j){l.textContent='ランキングに接続できません（公開後に利用できます）';return}
  let it=r.j.items.slice();if(MINE&&MINE.d===dd&&MYH&&!it.some(x=>x.h===MYH)){it.push({n:MINE.n,sc:MINE.sc,pf:MINE.pf,mc:MINE.mc,h:MYH});it.sort((a,b)=>b.sc-a.sc||(b.pf||0)-(a.pf||0));it=it.slice(0,100)}it.forEach((x,i)=>x.r=i+1);
@@ -661,11 +670,11 @@ $('dfb').onclick=e=>{e.stopPropagation();$('dp').classList.add('on')};$('dx').on
 $('hwb').onclick=e=>{e.stopPropagation();$('hw').classList.add('on')};$('hx').onclick=()=>$('hw').classList.remove('on');
 // ---- share text (hashtag has no "！" so it stays a link on X/LINE) ----
 const SHARE_TAG='#ピッ_セルフレジ',SHARE_MSG='';
-function shareText(){const r=LR;return `ピッ！セルフレジ－リザルト－\nSCORE：${r.sc.toLocaleString()} / RANK：${r.tt}\n・さばいた数：${r.count}\n・MAXコンボ：${r.maxC}\n・難易度：${DFS[r.d].n}\n${SHARE_MSG?SHARE_MSG+'\n':''}${location.href.split('#')[0]}\n${SHARE_TAG}`}
+function shareText(){const r=LR;return `ピッ！セルフレジ－リザルト－\nSCORE：${r.sc.toLocaleString()} / RANK：${r.tt}\n・さばいた数：${r.count}\n・MAXコンボ：${r.maxC}\n${r.d===4?'・誤スキャン：'+r.mis+'回\n':''}・難易度：${DFS[r.d].n}\n${SHARE_MSG?SHARE_MSG+'\n':''}${location.href.split('#')[0]}\n${SHARE_TAG}`}
 // ---- audio: if the context is stuck (iOS interruptions), rebuild it on the next touch ----
 let waking=false;async function wake(){if(!AC||waking)return;waking=true;try{if(AC.state!=='running'){await Promise.race([AC.resume(),new Promise(r=>setTimeout(r,250))]);if(AC.state!=='running'){try{AC.close()}catch(e){}initA()}}}catch(e){}waking=false}
 ['pointerdown','touchend','click'].forEach(e=>addEventListener(e,wake,true));document.addEventListener('visibilitychange',()=>{if(!document.hidden)wake()});
-const YD=[0,0,4,4,50],score=(c,p,m,y,d)=>c*1000+p*500+m*200+(d>=3?Math.floor((y||0)/YD[d]):0);
+const YD=[0,0,4,4,50],MISP=1000,score=(c,p,m,y,d,x)=>Math.max(0,c*1000+p*500+m*200+(d>=3?Math.floor((y||0)/YD[d]):0)-(d===4?(x||0)*MISP:0));
 // ---- title-screen preview: the game plays itself (silent, no score, no finger). Stops when START is pressed. ----
 const DV=260; // px/s while the barcode crosses the laser (steady speed, no stop)
 const D={ph:0,t:0,f:0,g:0,it:null,c:0,p0:null,tg:null,dur:1,aT:0,S:0,first:0,giveup:0,lastCt:0};
@@ -697,6 +706,6 @@ function demoStep(dt){
  case 7:{if(held&&held===it)drel();
   if(D.t>.5&&(!it||!items.includes(it)||D.t>4)){D.it=null;if(++D.c%6===0){combo=0;maxC=0;count=0;total=0;dq.length=0}dgo(0)}break}
  }}
-function demoInit(){items.length=0;spawnT.length=0;dq.length=0;lastL=null;combo=count=total=shown=perf=maxC=0;hidLast=prLast=smLast=false;smGap=0;menuIt=null;label=null;ptr=null;held=null;timeLeft=60;started=false;cdT=0;goT=0;demo=true;D.it=null;dgo(0);for(let i=0;i<4;i++)spawn(i)}
+function demoInit(){items.length=0;spawnT.length=0;dq.length=0;lastL=null;mis=0;combo=count=total=shown=perf=maxC=0;hidLast=prLast=smLast=false;smGap=0;menuIt=null;label=null;ptr=null;held=null;timeLeft=60;started=false;cdT=0;goT=0;demo=true;D.it=null;dgo(0);for(let i=0;i<4;i++)spawn(i)}
 demoInit();
 </script></body></html>
