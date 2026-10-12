@@ -36,7 +36,7 @@ input{-webkit-user-select:text;user-select:text}.nk{display:flex;gap:6px;margin-
 <h3>1. 取り出す</h3><p>カゴの商品を指でつかんで、持ち上げます。</p>
 <h3>2. バーコードを探す</h3><p>商品をタップすると裏返ります。バーコードの面は商品によって違います。端をつかんで動かすか、横に振ると、商品が回ります。</p>
 <h3>3. レーザーに通す</h3><p>バーコードがレーザーと水平になるように向けて通します。速く読めるほどPERFECT。「ピッ」と鳴ったら指を離すと、袋へ飛んでいきます。</p>
-<h3>こんな商品も</h3><ul><li>フィルムがかかっている：じっと押さえてめくる</li><li>バーコードがない(青果)：上の「選択」の枠へ運んで離し、同じ商品をタップ</li><li>汚れて読めない：上の「手入力」の枠へ運んで離し、バーコードの下の4桁を入力</li><li>割引シール：バーコードの上のシールを通すと、割引になります</li></ul>
+<h3>こんな商品も</h3><ul><li>フィルムがかかっている：じっと押さえてめくる</li><li>バーコードがない(青果)：上の「選択」の枠へ運んで離し、同じ商品をタップ</li><li>汚れて読めない：上の「手入力」の枠へ運んで離し、4桁の商品コードを入力</li><li>割引シール：バーコードの上のシールを通すと、割引になります</li></ul>
 <h3>コンボ</h3><p>PERFECTかGOODが続くと、レジの音が上がっていきます。3秒あくとコンボは切れます。</p>
 <h3>点数とランキング</h3><p>点数＝さばいた数＋PERFECT×0.5。同点のときは、PERFECTが多い人が上位です。「今日」のランキングは、毎日0時（日本時間）にリセットされます。</p>
 </div><button id='hx' class='cl'>閉じる</button></div></div>
@@ -270,7 +270,7 @@ function draw(){const g=ctx;g.setTransform(R,0,0,R,0,0);g.drawImage(BG,0,0,W,H);
  // items (held last)
  {[['選択',58,held&&held.ty.pr],['手入力',148,held&&held.sm]].forEach(([n,x,act])=>{g.fillStyle=act?'rgba(70,190,120,'+(.35+.25*Math.sin(clock*8))+')':'rgba(60,70,80,.55)';rr(g,x,106,82,34,10);g.fill();g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=1.5;g.stroke();g.textAlign='center';g.textBaseline='middle';g.fillStyle='#e8eef3';g.font='700 13px '+FONT;g.fillText(n,x+41,123)})}
  for(const it of items)drawItem(it);
- if(menuIt&&menuIt.sm){const e=eOC(mt);g.save();g.globalAlpha=e;g.translate(0,(1-e)*24);g.fillStyle='rgba(12,16,20,.9)';rr(g,12,246,336,234,16);g.fill();g.textAlign='center';g.textBaseline='middle';g.font='600 11px '+FONT;g.fillStyle=kmt>0?'#ff9a8a':'#9fb3c4';g.fillText(kmt>0?kmsg:'商品の下の4桁を入力',180,259);
+ if(menuIt&&menuIt.sm){const e=eOC(mt);g.save();g.globalAlpha=e;g.translate(0,(1-e)*24);g.fillStyle='rgba(12,16,20,.9)';rr(g,12,246,336,234,16);g.fill();g.textAlign='center';g.textBaseline='middle';g.font='600 11px '+FONT;g.fillStyle=kmt>0?'#ff9a8a':'#9fb3c4';g.fillText(kmt>0?kmsg:'4桁の商品コードを入力',180,259);
   for(let i=0;i<4;i++){g.fillStyle=kmt>0?'#5a2320':'#232c33';rr(g,80+i*52,268,44,38,8);g.fill();if(ki[i]){g.fillStyle='#fff';g.font='700 24px '+MONO;g.fillText(ki[i],102+i*52,288)}}
   ['1','2','3','4','5','6','7','8','9','⌫','0','C'].forEach((l,i)=>{const cx=28+(i%3)*104,cy=314+((i/3)|0)*38;g.fillStyle='#2a343c';rr(g,cx,cy,96,34,9);g.fill();g.fillStyle='#e6edf3';g.font='700 18px '+MONO;g.fillText(l,cx+48,cy+18)});g.restore()}
  if(menuIt&&!menuIt.sm){const e=eOC(mt);g.save();g.globalAlpha=e;g.translate(0,(1-e)*24);g.fillStyle='rgba(12,16,20,.86)';rr(g,12,252,336,218,16);g.fill();g.textAlign='center';g.textBaseline='middle';g.font='600 11px '+FONT;g.fillStyle='#9fb3c4';g.fillText('選択 ＞ 青果　同じ商品をタップ',180,266);
