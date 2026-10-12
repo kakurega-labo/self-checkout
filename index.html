@@ -402,8 +402,8 @@ async function showRank(sc,fresh){rkScope=sc;$('rk').classList.add('on');$('rt1'
 $('rt1').onclick=()=>showRank('day');$('rt2').onclick=()=>showRank('all');$('rx').onclick=()=>$('rk').classList.remove('on');$('rkb').onclick=e=>{e.stopPropagation();showRank('day')};
 $('hwb').onclick=e=>{e.stopPropagation();$('hw').classList.add('on')};$('hx').onclick=()=>$('hw').classList.remove('on');
 // ---- share text (hashtag has no "！" so it stays a link on X/LINE) ----
-const SHARE_TAG='#ピッセルフレジ',SHARE_MSG='';
-function shareText(){const r=LR;return `ピッ！セルフレジ-リザルト\nSCORE: ${score(r.count,r.perf,r.maxC).toLocaleString()} / RANK: ${r.tt}\n・さばいた数：${r.count}\n・MAXコンボ：${r.maxC}\n${SHARE_MSG?SHARE_MSG+'\n':''}${location.href.split('#')[0]}\n${SHARE_TAG}`}
+const SHARE_TAG='#ピッ_セルフレジ',SHARE_MSG='';
+function shareText(){const r=LR;return `ピッ！セルフレジ－リザルト－\nSCORE：${score(r.count,r.perf,r.maxC).toLocaleString()} / RANK：${r.tt}\n・さばいた数：${r.count}\n・MAXコンボ：${r.maxC}\n${SHARE_MSG?SHARE_MSG+'\n':''}${location.href.split('#')[0]}\n${SHARE_TAG}`}
 // ---- audio: if the context is stuck (iOS interruptions), rebuild it on the next touch ----
 let waking=false;async function wake(){if(!AC||waking)return;waking=true;try{if(AC.state!=='running'){await Promise.race([AC.resume(),new Promise(r=>setTimeout(r,250))]);if(AC.state!=='running'){try{AC.close()}catch(e){}initA()}}}catch(e){}waking=false}
 ['pointerdown','touchend','click'].forEach(e=>addEventListener(e,wake,true));document.addEventListener('visibilitychange',()=>{if(!document.hidden)wake()});
