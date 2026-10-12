@@ -1,4 +1,3 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!DOCTYPE html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ピッ！セルフレジ</title>
@@ -635,8 +634,11 @@ const nrm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s_\-.*・]+/g,'').repl
 const isBad=s=>{const n=nrm(s);return BADW.some(w=>n.includes(w))};
 async function jf(url,opt){try{const c=new AbortController(),t=setTimeout(()=>c.abort(),6000),r=await fetch(url,{...opt,signal:c.signal});clearTimeout(t);return{ok:r.ok,j:await r.json().catch(()=>null)}}catch(e){return null}}
 function apiStart(){TOK='';jf('/api/start').then(r=>{if(r&&r.ok&&r.j)TOK=r.j.t||''})}
+// server generation: v>=2 knows about difficulties. With an older server, non-中級 results must NOT be sent (they would land in the 中級 ranking).
+let SV=0;const SVP=jf('/api/start').then(r=>{SV=r&&r.ok&&r.j&&r.j.v>=2?2:1});
 async function register(){const el=$('nm'),msg=$('rmsg'),btn=$('reg'),name=Array.from(el.value.replace(/['"<>&]/g,'').trim()).slice(0,10).join('');
  if(!name){msg.textContent='ニックネームを入力してください';return}if(isBad(name)){msg.textContent='使えない言葉が含まれています';return}
+ if(LR.d!==2){await SVP;if(SV<2){msg.style.color='#a1281c';msg.textContent='この難易度のランキングは準備中です（サーバー更新後に登録できます）';return}}
  try{localStorage.setItem('rjName',name)}catch(e){}NM=name;btn.disabled=true;msg.textContent='送信中…';
  const r=await jf('/api/score',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pid:PID,name,count:LR.count,perf:LR.perf,maxC:LR.maxC,d:LR.d,y:LR.total,t:TOK})});
  if(r&&r.ok&&r.j){msg.style.color='#2a7a3a';msg.textContent='登録しました！ 今日 '+(r.j.day?r.j.day+'位':'圏外')+' / 全期間 '+(r.j.all?r.j.all+'位':'圏外');MINE={n:name,sc:LR.sc,pf:LR.perf,mc:LR.maxC,d:LR.d};RKD=LR.d;showRank('day',true)}
@@ -644,6 +646,7 @@ async function register(){const el=$('nm'),msg=$('rmsg'),btn=$('reg'),name=Array
 async function showRank(sc,fresh){rkScope=sc;const dd=RKD;$('rk').classList.add('on');[...$('rdf').children].forEach((b,i)=>b.classList.toggle('a',i+1===dd));$('rt1').classList.toggle('a',sc==='day');$('rt2').classList.toggle('a',sc==='all');$('rn').textContent=sc==='day'?'毎日0時（日本時間）にリセット／上位100位まで':'これまでのすべての記録／上位100位まで';
  const l=$('rl'),m=$('rm');l.textContent='読み込み中…';m.innerHTML='';
  if(LOCK[dd]){l.innerHTML="<div class='soon'><b>準備中</b><span>"+DFS[dd].n+'は近日公開です。<br>お楽しみに！</span></div>';return}
+ if(dd!==2){await SVP;if(SV<2){l.innerHTML="<div class='soon'><b>準備中</b><span>この難易度のランキングは、<br>サーバーの更新後に利用できます。</span></div>";return}}
  const[r,me]=await Promise.all([jf('/api/rank?scope='+sc+'&d='+dd+(fresh?'&fresh=1':'')),MYH?jf('/api/me?scope='+sc+'&d='+dd+'&h='+MYH):null]);if(rkScope!==sc||RKD!==dd)return;
  if(!r||!r.ok||!r.j){l.textContent='ランキングに接続できません（公開後に利用できます）';return}
  let it=r.j.items.slice();if(MINE&&MINE.d===dd&&MYH&&!it.some(x=>x.h===MYH)){it.push({n:MINE.n,sc:MINE.sc,pf:MINE.pf,mc:MINE.mc,h:MYH});it.sort((a,b)=>b.sc-a.sc||(b.pf||0)-(a.pf||0));it=it.slice(0,100)}it.forEach((x,i)=>x.r=i+1);
@@ -697,5 +700,3 @@ function demoStep(dt){
 function demoInit(){items.length=0;spawnT.length=0;dq.length=0;lastL=null;combo=count=total=shown=perf=maxC=0;hidLast=prLast=smLast=false;smGap=0;menuIt=null;label=null;ptr=null;held=null;timeLeft=60;started=false;cdT=0;goT=0;demo=true;D.it=null;dgo(0);for(let i=0;i<4;i++)spawn(i)}
 demoInit();
 </script></body></html>
-
-</body></html>
