@@ -12,12 +12,13 @@ const J=(o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'content-ty
 
 // One entry per player per scope. Key order = rank order (smaller key = better).
 async function upsert(kv,scope,h,e,ttl){
- const inv=String(9999-Math.round(e.sc*2)).padStart(4,'0')+String(999-e.pf).padStart(3,'0'),pk='p:'+scope+':'+h,old=await kv.get(pk,'json');
- if(old&&old.inv<=inv)return old;
- const k=scope+':'+inv+':'+h,o=ttl?{expirationTtl:ttl}:{};
+ const inv=String(999999-e.sc).padStart(6,'0')+String(999-e.pf).padStart(3,'0'),pk='p:'+scope+':'+h,old=await kv.get(pk,'json'),o=ttl?{expirationTtl:ttl}:{};
+ if(old&&old.inv<=inv){ // the existing record is better or equal: keep it, but follow a nickname change
+  if(old.m&&old.m.n!==e.n){const m={...old.m,n:e.n};await kv.put(old.k,'',{metadata:m,...o});await kv.put(pk,JSON.stringify({...old,m}),o)}
+  return old}
+ const k=scope+':'+inv+':'+h,m={n:e.n,sc:e.sc,pf:e.pf,mc:e.mc,h};
  if(old&&old.k)await kv.delete(old.k);
- await kv.put(k,'',{metadata:{n:e.n,sc:e.sc,pf:e.pf,mc:e.mc,h},...o});
- await kv.put(pk,JSON.stringify({k,inv}),o);
+ await kv.put(k,'',{metadata:m,...o});await kv.put(pk,JSON.stringify({k,inv,m}),o);
  return{k,inv}}
 async function rankOf(kv,scope,k,h){
  const keys=(await kv.list({prefix:scope+':',limit:100})).keys;
@@ -31,8 +32,8 @@ export async function onRequest({request,env}){
  if(p==='rank'&&request.method==='GET'){
   const sc=u.searchParams.get('scope')==='all'?'all':'day',ck=new Request(u.origin+'/api/rank?scope='+sc+'&d='+day()),hit=u.searchParams.get('fresh')?null:await caches.default.match(ck);
   if(hit)return hit;
-  const keys=(await kv.list({prefix:sc==='all'?'a:':'d'+day()+':',limit:50})).keys;
-  const res=new Response(JSON.stringify({items:keys.map((k,i)=>({r:i+1,n:k.metadata.n,sc:k.metadata.sc,pf:k.metadata.pf,h:k.metadata.h}))}),{headers:{'content-type':'application/json','cache-control':'public, max-age=10'}});
+  const keys=(await kv.list({prefix:sc==='all'?'a3:':'f'+day()+':',limit:50})).keys;
+  const res=new Response(JSON.stringify({items:keys.map((k,i)=>({r:i+1,n:k.metadata.n,sc:k.metadata.sc,pf:k.metadata.pf,mc:k.metadata.mc,h:k.metadata.h}))}),{headers:{'content-type':'application/json','cache-control':'public, max-age=10'}});
   await caches.default.put(ck,res.clone());return res}
  if(p==='score'&&request.method==='POST'){
   const b=await request.json().catch(()=>null);if(!b)return J({error:'bad'},400);
@@ -46,7 +47,7 @@ export async function onRequest({request,env}){
    if(!ts||!sig||!(age>55e3&&age<18e5)||sig!==await sign(env.SECRET,ts))return J({error:'token'},400);
    if(await kv.get('u:'+sig))return J({error:'used'},400);
    await kv.put('u:'+sig,'1',{expirationTtl:3600})}
-  const h=(await sha(b.pid)).slice(0,16),e={n:name,sc:c+pf*.5,pf,mc,h},out={};
-  for(const[scope,ttl,key]of[['a',0,'all'],['d'+day(),172800,'day']]){const r=await upsert(kv,scope,h,e,ttl);out[key]=await rankOf(kv,scope,r.k,h)}
+  const h=(await sha(b.pid)).slice(0,16),e={n:name,sc:c*1000+pf*500+mc*200,pf,mc,h},out={};
+  for(const[scope,ttl,key]of[['a3',0,'all'],['f'+day(),172800,'day']]){const r=await upsert(kv,scope,h,e,ttl);out[key]=await rankOf(kv,scope,r.k,h)}
   return J(out)}
  return J({error:'not-found'},404)}
