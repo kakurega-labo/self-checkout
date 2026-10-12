@@ -30,9 +30,14 @@ export async function onRequest({request,env}){
  if(p==='rank'&&request.method==='GET'){
   const sc=u.searchParams.get('scope')==='all'?'all':'day',ck=new Request(u.origin+'/api/rank?scope='+sc+'&d='+day()),hit=u.searchParams.get('fresh')?null:await caches.default.match(ck);
   if(hit)return hit;
-  const{results}=await db.prepare('SELECT name AS n,sc,pf,mc,h FROM scores WHERE scope=? ORDER BY sc DESC,pf DESC,at ASC LIMIT 50').bind(sc==='all'?'all':day()).all();
+  const{results}=await db.prepare('SELECT name AS n,sc,pf,mc,h FROM scores WHERE scope=? ORDER BY sc DESC,pf DESC,at ASC LIMIT 100').bind(sc==='all'?'all':day()).all();
   const res=new Response(JSON.stringify({items:results.map((x,i)=>({r:i+1,...x}))}),{headers:{'content-type':'application/json','cache-control':'public, max-age=10'}});
   await caches.default.put(ck,res.clone());return res}
+ if(p==='me'&&request.method==='GET'){ // my own rank (not cached), for the "you are #n" card
+  const scope=u.searchParams.get('scope')==='all'?'all':day(),h=String(u.searchParams.get('h')||'');
+  if(!/^[0-9a-f]{16}$/.test(h))return J({error:'h'},400);
+  const row=await db.prepare('SELECT name AS n,sc,pf,mc FROM scores WHERE scope=? AND h=?').bind(scope,h).first();
+  return J(row?{registered:true,r:await rankOf(db,scope,h),...row}:{registered:false})}
  if(p==='score'&&request.method==='POST'){
   const b=await request.json().catch(()=>null);if(!b)return J({error:'bad'},400);
   const name=Array.from(String(b.name||'').replace(/[\u0000-\u001f<>&"'`]/g,'').trim()).slice(0,10).join('');
