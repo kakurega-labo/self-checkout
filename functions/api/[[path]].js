@@ -13,8 +13,8 @@ const J=(o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{'content-ty
 
 // Difficulty d = 1..4 (初級/中級/上級/超上級). Scope key: 中級(2) keeps the ORIGINAL keys ('all' / 'YYYYMMDD') so existing records need no migration; others are 'all:d' / 'YYYYMMDD:d'.
 const SKEY=(b,d)=>d===2?b:b+':'+d;
-const DOK=v=>[1,2,3,4].includes(+v)?+v:2,OPEN=[0,1,1,1,0],MAXP=[0,0,3980,7000,400000],YD=[0,0,4,4,50]; // MAXP: highest single price per shop (yen sanity check). YD: yen per point
-const calc=(d,c,pf,mc,y)=>c*1000+pf*500+mc*200+(d>=3?Math.floor(y/YD[d]):0);
+const DOK=v=>[1,2,3,4].includes(+v)?+v:2,OPEN=[0,1,1,1,1],MAXP=[0,0,3980,7000,400000],YD=[0,0,4,4,50]; // MAXP: highest single price per shop (yen sanity check). YD: yen per point
+const MISP=1000,calc=(d,c,pf,mc,y,x)=>Math.max(0,c*1000+pf*500+mc*200+(d>=3?Math.floor(y/YD[d]):0)-(d===4?x*MISP:0)); // 超上級は誤スキャン1回につき-1000
 // One row per player per scope ('all:d' or 'JSTdate:d'). Rank = higher score, then more perfects, then earlier.
 const AFTER='(excluded.sc>sc OR (excluded.sc=sc AND excluded.pf>pf))';
 const UPSERT=`INSERT INTO scores(scope,h,name,sc,pf,mc,cnt,at) VALUES(?,?,?,?,?,?,?,?)
@@ -30,7 +30,7 @@ async function rankOf(db,scope,h){
 export async function onRequest({request,env}){
  const u=new URL(request.url),p=u.pathname.replace(/^\/api\//,''),db=env.DB;
  if(!db)return J({error:'no-db'},503);
- if(p==='start'&&request.method==='GET'){const ts=Date.now();return J({v:2,t:ts+'.'+await sign(env.SECRET||'dev',String(ts))})}
+ if(p==='start'&&request.method==='GET'){const ts=Date.now();return J({v:3,t:ts+'.'+await sign(env.SECRET||'dev',String(ts))})}
  if(p==='rank'&&request.method==='GET'){
   const sc=u.searchParams.get('scope')==='all'?'all':'day',d=DOK(u.searchParams.get('d')),ck=new Request(u.origin+'/api/rank?scope='+sc+'&lv='+d+'&d='+day()),hit=u.searchParams.get('fresh')?null:await caches.default.match(ck);
   if(hit)return hit;
@@ -49,15 +49,16 @@ export async function onRequest({request,env}){
   if(!/^[a-z0-9]{8,32}$/.test(String(b.pid||'')))return J({error:'pid'},400);
   const c=+b.count,pf=+b.perf,mc=+b.maxC,d=b.d===undefined?2:+b.d; // old clients send no d: treat as 中級
   if(![1,2,3,4].includes(d))return J({error:'diff'},400);
-  if(!OPEN[d])return J({error:'locked'},403); // 超上級は準備中。M15で OPEN の最後を 1 にして開放する
+  if(!OPEN[d])return J({error:'locked'},403);
+  const x=d===4?(b.mx===undefined?0:+b.mx):0; // 誤スキャン回数（超上級のみ）
   const y=d>=3?(b.y===undefined?0:+b.y):0; // total yen (上級・超上級のみ得点に入る。中級は従来の式のまま)
-  if(![c,pf,mc,y].every(Number.isInteger)||c<0||c>70||pf<0||pf>c||mc<0||mc>c||y<0||y>c*MAXP[d])return J({error:'range'},400);
+  if(![c,pf,mc,y,x].every(Number.isInteger)||x<0||x>200||c<0||c>70||pf<0||pf>c||mc<0||mc>c||y<0||y>c*MAXP[d])return J({error:'range'},400);
   if(env.SECRET){ // token from /api/start: must be 55s..30min old, single use
    const[ts,sig]=String(b.t||'').split('.'),age=Date.now()-(+ts);
    if(!ts||!sig||!(age>55e3&&age<18e5)||sig!==await sign(env.SECRET,ts))return J({error:'token'},400);
    const r=await db.prepare('INSERT OR IGNORE INTO used_tokens(sig,at) VALUES(?,?)').bind(sig,Date.now()).run();
    if(!r.meta.changes)return J({error:'used'},400)}
-  const h=(await sha(b.pid)).slice(0,16),sc=calc(d,c,pf,mc,y),now=Date.now(),dy=day(),up=db.prepare(UPSERT),ka=SKEY('all',d),kd=SKEY(dy,d);
+  const h=(await sha(b.pid)).slice(0,16),sc=calc(d,c,pf,mc,y,x),now=Date.now(),dy=day(),up=db.prepare(UPSERT),ka=SKEY('all',d),kd=SKEY(dy,d);
   // rows of earlier days in the 'today' scope are not kept (deleted below); 'all:d' rows stay
   await db.batch([up.bind(ka,h,name,sc,pf,mc,c,now),up.bind(kd,h,name,sc,pf,mc,c,now),
    db.prepare("DELETE FROM scores WHERE substr(scope,1,3)<>'all' AND substr(scope,1,8)<?").bind(dy),db.prepare('DELETE FROM used_tokens WHERE at<?').bind(now-36e5)]);
