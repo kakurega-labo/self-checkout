@@ -49,7 +49,7 @@ input{-webkit-user-select:text;user-select:text}.nk{display:flex;gap:6px;margin-
 <div id='dp'><div class='rb'><h2 class='rtt'>難易度</h2><div id='dpl'></div><button id='dx' class='cl'>閉じる</button></div></div>
 <div id='hw'><div class='rb'><h2 class='rtt'>遊び方</h2><div id='hwl'>
 <p>制限時間は60秒。さばいた点数とパーフェクトの数で、称号とランキングが決まります。</p>
-<h3>難易度</h3><ul><li>初級（屋台）：判定が広め。数をこなそう</li><li>中級（スーパー）：いつものレジ</li><li>上級（百貨店）：判定がせまくなり、金額の高い商品ほど高得点</li><li>超上級（ブランドショップ）：ほぼ真っすぐでないと読めない高級品。防犯タグを外してから通す。付けたまま通すと減点。かごが空になってから次のお客様</li><li>お店ごとに、レジも商品も変わります</li></ul>
+<h3>難易度</h3><ul><li>初級（屋台）：判定が広め。数をこなそう</li><li>中級（スーパー）：判定はふつう。コンボとパーフェクトを狙おう</li><li>上級（百貨店）：判定がせまくなり、金額の高い商品ほど高得点</li><li>超上級（ブランドショップ）：ほぼ真っすぐでないと読めない高級品。防犯タグを外してから通す。付けたまま通すと減点。かごが空になってから次のかご</li><li>お店ごとに、レジも商品も変わります</li></ul>
 <h3>1. 取り出す</h3><p>カゴの商品を指でつかんで、持ち上げます。</p>
 <h3>2. バーコードを探す</h3><p>商品をタップすると裏返ります。バーコードの面は商品によって違います。端をつかんで動かすか、横に振ると、商品が回ります。</p>
 <h3>3. レーザーに通す</h3><p>バーコードがレーザーと水平になるように向けて通します。速く読めるほどパーフェクト。「ピッ」と鳴ったら指を離すと、袋へ飛んでいきます。</p>
@@ -571,7 +571,7 @@ function draw(){const g=ctx,sx=cv.width/W,sy=cv.height/H,k=trauma*trauma*RM,n=q=
  if(!demo&&hint&&held&&held.sc){g.textAlign='center';g.font='600 13px '+FONT;g.fillStyle='#9dffb8';g.fillText('指を離すと袋へ',W/2,236)}
  if(!demo&&held&&held.pl<1&&Math.abs(held.fl-(held.ty.bf===0?0:1))<.15){g.textAlign='center';g.font='600 13px '+FONT;g.fillStyle='#ffe9a8';g.fillText('じっと押さえてフィルムをめくる',W/2,236)}
  if(!demo&&held&&held.tag){g.textAlign='center';g.font='600 13px '+FONT;g.fillStyle='#ff9a8a';g.fillText('防犯タグ！上の「タグ外し」の枠でじっと押さえる',W/2,216)}
- if(!demo&&DIFF===4&&started&&!items.length){g.textAlign='center';g.font='700 15px '+FONT;g.fillStyle='rgba(255,255,255,.8)';g.fillText('次のお客様をお呼びしています…',W/2,360)}
+ if(!demo&&DIFF===4&&started&&!items.length){g.textAlign='center';g.font='700 15px '+FONT;g.fillStyle='rgba(255,255,255,.8)';g.fillText('次のかごを持ってきています…',W/2,360)}
  if(!demo&&held&&held.ty.pr){g.textAlign='center';g.font='600 13px '+FONT;g.fillStyle='#9dffb8';g.fillText('上の「選択」の枠へ運んで離す',W/2,236)}
  if(!demo&&held&&held.sm&&!held.pk&&(held.fl>.5)===(held.ty.bf!==0)){g.textAlign='center';g.font='600 13px '+FONT;g.fillStyle='#ffd0a0';g.fillText('汚れて読めない…「手入力」の枠へ',W/2,236)}
  g.setTransform(sx,0,0,sy,0,0); // overlays below are not shaken
@@ -590,7 +590,7 @@ requestAnimationFrame(frame);
 
 // ---- round flow & receipts (with discounts) ----
 const LOG={},DL={},DN={},dq=[],NAME='ピッ！セルフレジ',TTS={1:[[0,'初心者'],[12000,'買い物上手'],[22000,'常連さん'],[32000,'レジ名人'],[42000,'レジ神']],2:[[0,'初心者'],[9000,'買い物上手'],[17000,'常連さん'],[25000,'レジ名人'],[33000,'レジ神']],3:[[0,'初心者'],[9000,'買い物上手'],[17000,'常連さん'],[25000,'レジ名人'],[33000,'レジ神']],4:[[0,'初心者'],[25000,'買い物上手'],[40000,'常連さん'],[55000,'レジ名人'],[70000,'レジ神']]},ttOf=(sc,d)=>TTS[d].filter(a=>sc>=a[0]).pop()[1],
-DFS=[null,{n:'初級',shop:'屋台',tm:1.5,cap:'判定が広め。数をこなそう'},{n:'中級',shop:'スーパー',tm:1,cap:'いつものレジ。ルールは今までどおり'},{n:'上級',shop:'百貨店',tm:.65,cap:'判定がせまく、金額の高い商品ほど高得点'},{n:'超上級',shop:'ブランドショップ',tm:.4,cap:'防犯タグ外し・誤スキャンは減点・6桁コード'}],
+DFS=[null,{n:'初級',shop:'屋台',tm:1.5,cap:'判定が広い。数をこなそう'},{n:'中級',shop:'スーパー',tm:1,cap:'判定はふつう。コンボとパーフェクトを狙おう'},{n:'上級',shop:'百貨店',tm:.65,cap:'判定がせまい。高い商品ほど高得点'},{n:'超上級',shop:'ブランドショップ',tm:.4,cap:'判定が超せまい。防犯タグを外してから通そう'}],
 yn=n=>(n<0?'-':'')+'¥'+Math.abs(n).toLocaleString();let lastL=null,DIFF=2,mis=0;const LOCK=[0,0,0,0,0];
 try{const v=+localStorage.getItem('rjDiff');if(v>=1&&v<=4&&!LOCK[v])DIFF=v}catch(e){}
 const TM=()=>demo?1:DFS[DIFF].tm,ez=()=>DIFF===1;
