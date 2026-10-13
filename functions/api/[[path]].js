@@ -35,7 +35,8 @@ async function rankOf(db,scope,h){
 export async function onRequest({request,env}){
  const u=new URL(request.url),p=u.pathname.replace(/^\/api\//,''),db=env.DB;
  if(!db)return J({error:'no-db'},503);
- if(p==='start'&&request.method==='GET'){const ts=Date.now();return J({v:4,t:ts+'.'+await sign(env.SECRET||'dev',String(ts))})}
+ if(p==='start'&&request.method==='GET'){const ts=Date.now(),ok=await db.prepare('SELECT 1 AS x FROM scores LIMIT 1').first().then(()=>1,()=>0); // db:0 = データベースにつながらない（無料枠の超過など）。クライアントは登録欄を出さない
+  return J({v:4,db:ok,t:ts+'.'+await sign(env.SECRET||'dev',String(ts))})}
  if(p==='rank'&&request.method==='GET'){
   const sc=u.searchParams.get('scope')==='all'?'all':'day',d=DOK(u.searchParams.get('d'));if(d===1)await purge1(db);const ck=new Request(u.origin+'/api/rank?scope='+sc+'&lv='+d+'&d='+day()),hit=u.searchParams.get('fresh')?null:await caches.default.match(ck);
   if(hit)return hit;
