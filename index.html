@@ -668,7 +668,7 @@ async function showRank(sc,fresh){rkScope=sc;const dd=RKD;$('rk').classList.add(
  if(LOCK[dd]){l.innerHTML="<div class='soon'><b>準備中</b><span>"+DFS[dd].n+'は近日公開です。<br>お楽しみに！</span></div>';return}
  if(dd!==2){await SVP;if(SV<(dd===4?3:2)){l.innerHTML="<div class='soon'><b>準備中</b><span>この難易度のランキングは、<br>サーバーの更新後に利用できます。</span></div>";return}}
  const[r,me]=await Promise.all([jf('/api/rank?scope='+sc+'&d='+dd+(fresh?'&fresh=1':'')),MYH?jf('/api/me?scope='+sc+'&d='+dd+'&h='+MYH):null]);if(rkScope!==sc||RKD!==dd)return;
- if(!r||!r.ok||!r.j){l.textContent='ランキングに接続できません（公開後に利用できます）';return}
+ if(!r||!r.ok||!r.j){l.textContent='ランキングに接続できません。しばらくしてからもう一度お試しください';return}
  let it=r.j.items.slice();if(MINE&&MINE.d===dd&&MYH&&!it.some(x=>x.h===MYH)){it.push({n:MINE.n,sc:MINE.sc,pf:MINE.pf,mc:MINE.mc,h:MYH});it.sort((a,b)=>b.sc-a.sc||(b.pf||0)-(a.pf||0));it=it.slice(0,100)}it.forEach((x,i)=>x.r=i+1);
  if(me&&me.ok&&me.j){const q=me.j;m.innerHTML=q.registered?`<div class='mc ${q.r<=100?'in':'out'}'><span>あなたは</span><b>${q.r}位</b><span>です${q.r>100?'（ランキング圏外）':''}</span><small>スコア ${q.sc.toLocaleString()}　最大${q.mc}コンボ</small></div>`:`<div class='mc no'><b>あなたはまだ未登録です</b><small>遊んでランキングに登録しよう！</small></div>`}
  if(!it.length){l.textContent='まだ記録がありません';return}
