@@ -58,7 +58,7 @@ input{-webkit-user-select:text;user-select:text}.nk{display:flex;gap:6px;margin-
 <div id='nw'><div class='rb'><h2 class='rtt'>お知らせ</h2><div id='nwl'></div><button id='nx' class='cl'>閉じる</button></div></div>
 <div id='hw'><div class='rb'><h2 class='rtt'>遊び方</h2><div id='hwl'>
 <p>制限時間は60秒。さばいた点数とパーフェクトの数で、称号とランキングが決まります。</p>
-<h3>難易度</h3><ul><li>初級（屋台）：判定が広め。数をこなそう。中級でレジ名人になったら卒業（ランキングは見られます）</li><li>中級（スーパー）：判定はふつう。コンボとパーフェクトを狙おう</li><li>上級（百貨店）：判定がせまくなり、金額の高い商品ほど高得点</li><li>超上級（ブランドショップ）：ほぼ真っすぐでないと読めない高級品。防犯タグを外してから通す。付けたまま通すと減点。かごが空になってから次のかご</li><li>お店ごとに、レジも商品も変わります</li></ul>
+<h3>難易度</h3><ul><li>初級（屋台）：判定が広め。数をこなそう。レジ名人になったら卒業（ランキングは見られます）</li><li>中級（スーパー）：判定はふつう。コンボとパーフェクトを狙おう</li><li>上級（百貨店）：判定がせまくなり、金額の高い商品ほど高得点</li><li>超上級（ブランドショップ）：ほぼ真っすぐでないと読めない高級品。防犯タグを外してから通す。付けたまま通すと減点。かごが空になってから次のかご</li><li>お店ごとに、レジも商品も変わります</li></ul>
 <h3>1. 取り出す</h3><p>カゴの商品を指でつかんで、持ち上げます。</p>
 <h3>2. バーコードを探す</h3><p>商品をタップすると裏返ります。バーコードの面は商品によって違います。端をつかんで動かすか、横に振ると、商品が回ります。</p>
 <h3>3. レーザーに通す</h3><p>バーコードがレーザーと水平になるように向けて通します。速く読めるほどパーフェクト。「ピッ」と鳴ったら指を離すと、袋へ飛んでいきます。</p>
@@ -600,7 +600,7 @@ requestAnimationFrame(frame);
 // ---- round flow & receipts (with discounts) ----
 const LOG={},DL={},DN={},dq=[],NAME='ピッ！セルフレジ',TTS={1:[[0,'初心者'],[12000,'買い物上手'],[22000,'常連さん'],[32000,'レジ名人'],[42000,'レジ神']],2:[[0,'初心者'],[9000,'買い物上手'],[17000,'常連さん'],[25000,'レジ名人'],[33000,'レジ神']],3:[[0,'初心者'],[9000,'買い物上手'],[17000,'常連さん'],[25000,'レジ名人'],[33000,'レジ神']],4:[[0,'初心者'],[25000,'買い物上手'],[40000,'常連さん'],[55000,'レジ名人'],[70000,'レジ神']]},ttOf=(sc,d)=>TTS[d].filter(a=>sc>=a[0]).pop()[1],
 DFS=[null,{n:'初級',shop:'屋台',tm:1.5,cap:'判定が広い。数をこなそう'},{n:'中級',shop:'スーパー',tm:1,cap:'判定はふつう。コンボとパーフェクトを狙おう'},{n:'上級',shop:'百貨店',tm:.65,cap:'判定がせまい。高い商品ほど高得点'},{n:'超上級',shop:'ブランドショップ',tm:.4,cap:'判定が超せまい。防犯タグを外してから通そう'}],
-yn=n=>(n<0?'-':'')+'¥'+Math.abs(n).toLocaleString();let lastL=null,DIFF=2,mis=0;const LOCK=[0,0,0,0,0],GR=[0,0,25000,25000,55000]; // GR: レジ名人の点数。どれかの難易度で届いたら初級は卒業
+yn=n=>(n<0?'-':'')+'¥'+Math.abs(n).toLocaleString();let lastL=null,DIFF=2,mis=0;const LOCK=[0,0,0,0,0],GR=[0,32000,25000,25000,55000]; // GR: レジ名人の点数。どれかの難易度で届いたら初級は卒業
 let GRAD=false;try{GRAD=localStorage.getItem('rjGrad')==='1'}catch(e){}
 const isLk=i=>!!LOCK[i]||(i===1&&GRAD);
 try{const v=+localStorage.getItem('rjDiff');if(v>=1&&v<=4&&!LOCK[v])DIFF=v}catch(e){}
@@ -611,14 +611,14 @@ function rcData(){const d=new Date(),p=n=>String(n).padStart(2,'0'),rows=[];let 
  return{date:d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日('+'日月火水木金土'[d.getDay()]+') '+p(d.getHours())+':'+p(d.getMinutes()),rows,ds,gross:total+ds,tax:Math.floor(total*10/110),dep:Math.max(1000,Math.ceil(total/1000)*1000)}}
 function finish(){started=false;menuIt=null;for(const q of dq)total-=q[1];dq.length=0;ptr=null;if(held){held.held=false;held.r=null;held=null}ping(pf(12),.3,.35);ping(pf(7),.2,.35,.08);
  const sc=score(count,perf,maxC,total,DIFF,mis),tt=ttOf(sc,DIFF);let best=0;try{best=+localStorage.getItem('rjBestC')||0;if(maxC>best)localStorage.setItem('rjBestC',maxC)}catch(e){}
- const D=rcData();LR={tt,total,count,perf,maxC,D,d:DIFF,sc,mis};const newGrad=DIFF>=2&&sc>=GR[DIFF]&&!GRAD;if(newGrad)setGrad();
+ const D=rcData();LR={tt,total,count,perf,maxC,D,d:DIFF,sc,mis};const on1=Date.now()>=RESET1,newGrad=sc>=GR[DIFF]&&!GRAD&&(DIFF>1||on1),cap=DIFF===1&&on1&&sc>=GR[1];if(newGrad)setGrad();
  const dl=(a,c)=>`<dl${c?` class='${c}'`:''}>`+a.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')+'</dl>';
  setTimeout(()=>{$('res').firstChild.innerHTML=`<div class='ty'>ご利用ありがとうございました。</div><div class='ry'>領　収　証</div><div class='sm l'>${D.date}</div>`
  +dl(D.rows.length?D.rows.map(r=>[r[2]?`<small class='dc'>${r[0]}</small>`:r[0],r[2]?`<small class='dc'>${yn(r[1])}</small>`:yn(r[1])]):[['（商品なし）','']])
  +(D.ds?dl([['（商品合計）',yn(D.gross)],['（値引合計）',yn(-D.ds)]]):'')+dl([['合　計',yn(total)]],'tot')+dl([['（内消費税等）',yn(D.tax)],['お預り',yn(D.dep)],['お釣',yn(D.dep-total)]])
  +dl([['スコア',sc.toLocaleString()],['難易度',DFS[DIFF].n],['さばいた点数',count],['パーフェクト',perf],['最大コンボ',maxC]].concat(DIFF===4?[['誤スキャン（-'+MISP+'点）',mis+'回']]:[]),'scr')
- +`<div id='ttl'>${tt}</div><div id='best'>${maxC>best?'最大コンボ自己ベスト更新！':'最大'+best+'コンボ'}</div>${newGrad?"<div class='sm note'>レジ名人！初級は卒業です</div>":''}<div class='nk'><input id='nm' maxlength='10' enterkeyhint='done' autocomplete='off' placeholder='ニックネーム（10文字まで）' value='${NM}'><button id='reg'>登録</button></div><div class='sm note'>登録すると、ニックネームと点数がランキングに公開されます</div><div id='rmsg'></div><button id='again'>もう一回</button><button id='rkv' class='s'>ランキングを見る</button><div class='sh2'><button id='shr' class='s'>レシートを共有</button><button id='xsh' class='x'>Xで共有<small>（画像なし）</small></button></div><button id='home' class='s'>タイトルへ</button>`;
- $('again').onclick=()=>{$('res').classList.remove('on');reset()};$('shr').onclick=share;$('xsh').onclick=shareX;$('reg').onclick=register;$('rkv').onclick=()=>{RKD=LR.d;showRank('day')};
+ +`<div id='ttl'>${tt}</div><div id='best'>${maxC>best?'最大コンボ自己ベスト更新！':'最大'+best+'コンボ'}</div>${cap?"<div class='sm note'><b>レジ名人！初級は卒業です</b><br>初級では登録できません。中級以上で挑戦しよう</div>":newGrad?"<div class='sm note'>レジ名人！初級は卒業です</div>":''}${cap?'':`<div class='nk'><input id='nm' maxlength='10' enterkeyhint='done' autocomplete='off' placeholder='ニックネーム（10文字まで）' value='${NM}'><button id='reg'>登録</button></div><div class='sm note'>登録すると、ニックネームと点数がランキングに公開されます</div>`}<div id='rmsg'></div><button id='again'>もう一回</button><button id='rkv' class='s'>ランキングを見る</button><div class='sh2'><button id='shr' class='s'>レシートを共有</button><button id='xsh' class='x'>Xで共有<small>（画像なし）</small></button></div><button id='home' class='s'>タイトルへ</button>`;
+ $('again').onclick=()=>{$('res').classList.remove('on');reset()};$('shr').onclick=share;$('xsh').onclick=shareX;if($('reg'))$('reg').onclick=register;$('rkv').onclick=()=>{RKD=LR.d;showRank('day')};
  $('home').onclick=()=>{$('res').classList.remove('on');items.length=0;total=shown=count=combo=perf=maxC=0;timeLeft=60;lastL=null;label=null;dq.length=0;demoInit();$('start').style.display='flex'};$('res').classList.add('on')},700)}
 function share(){const r=LR,D=r.D,hh=D.rows.reduce((a,x,i)=>a+(x[2]?50:(D.rows[i+1]&&D.rows[i+1][2]?31:42)),0),sY=534+hh+(D.ds?88:0),stY=sY+215,pB=stY+105,H=pB+40,c=document.createElement('canvas');c.width=620;c.height=pB-40;const g=c.getContext('2d');g.translate(-50,-40);
  g.fillStyle='#f6f5f0';g.fillRect(50,40,620,pB-40);
@@ -662,8 +662,8 @@ async function register(){const el=$('nm'),msg=$('rmsg'),btn=$('reg'),name=Array
  try{localStorage.setItem('rjName',name)}catch(e){}NM=name;btn.disabled=true;msg.textContent='送信中…';
  const r=await jf('/api/score',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pid:PID,name,count:LR.count,perf:LR.perf,maxC:LR.maxC,d:LR.d,y:LR.total,mx:LR.mis||0,t:TOK})});
  if(r&&r.ok&&r.j){msg.style.color='#2a7a3a';msg.textContent='登録しました！ 今日 '+(r.j.day?r.j.day+'位':'圏外')+' / 全期間 '+(r.j.all?r.j.all+'位':'圏外');MINE={n:name,sc:LR.sc,pf:LR.perf,mc:LR.maxC,d:LR.d};RKD=LR.d;showRank('day',true)}
- else{btn.disabled=false;msg.style.color='#a1281c';const e=r&&r.j&&r.j.error;msg.textContent=!r?'ランキングに接続できません':e==='ng'?'使えない言葉が含まれています':e==='grad'?'初級は卒業しました':e==='token'||e==='used'?'この結果は登録できません（もう一度遊んでください）':'登録できませんでした'}}
-async function showRank(sc,fresh){rkScope=sc;const dd=RKD;$('rk').classList.add('on');[...$('rdf').children].forEach((b,i)=>b.classList.toggle('a',i+1===dd));$('rt1').classList.toggle('a',sc==='day');$('rt2').classList.toggle('a',sc==='all');$('rn').textContent=sc==='day'?'毎日0時（日本時間）にリセット／上位100位まで':'これまでのすべての記録／上位100位まで';if(dd===1)$('rn').append(document.createElement('br'),Object.assign(document.createElement('b'),{textContent:'中級でレジ名人になったら卒業'}));if(dd===1&&Date.now()>=RESET1&&Date.now()<RESET1+3*864e5)$('rn').append(document.createElement('br'),'10/14 0:00 に新しくなりました');
+ else{btn.disabled=false;msg.style.color='#a1281c';const e=r&&r.j&&r.j.error;msg.textContent=!r?'ランキングに接続できません':e==='ng'?'使えない言葉が含まれています':e==='grad'||e==='cap'?'初級は卒業しました':e==='token'||e==='used'?'この結果は登録できません（もう一度遊んでください）':'登録できませんでした'}}
+async function showRank(sc,fresh){rkScope=sc;const dd=RKD;$('rk').classList.add('on');[...$('rdf').children].forEach((b,i)=>b.classList.toggle('a',i+1===dd));$('rt1').classList.toggle('a',sc==='day');$('rt2').classList.toggle('a',sc==='all');$('rn').textContent=sc==='day'?'毎日0時（日本時間）にリセット／上位100位まで':'これまでのすべての記録／上位100位まで';if(dd===1)$('rn').append(document.createElement('br'),Object.assign(document.createElement('b'),{textContent:'レジ名人になったら卒業'}));if(dd===1&&Date.now()>=RESET1&&Date.now()<RESET1+3*864e5)$('rn').append(document.createElement('br'),'10/14 0:00 に新しくなりました');
  const l=$('rl'),m=$('rm');l.textContent='読み込み中…';m.innerHTML='';
  if(LOCK[dd]){l.innerHTML="<div class='soon'><b>準備中</b><span>"+DFS[dd].n+'は近日公開です。<br>お楽しみに！</span></div>';return}
  if(dd!==2){await SVP;if(SV<(dd===4?3:2)){l.innerHTML="<div class='soon'><b>準備中</b><span>この難易度のランキングは、<br>サーバーの更新後に利用できます。</span></div>";return}}
@@ -689,8 +689,8 @@ const JT=(m,d,h,mi)=>Date.UTC(2026,m-1,d,h-9,mi||0);
 const TAGC={'追加':'#e0392b','改善':'#2f6fb5','修正':'#4a7a4a','ランキング':'#b07a10','予告':'#d9780f','お知らせ':'#555'};
 const DOT1=RESET1+3*864e5; // 赤い点は 10/17 0:00 まで（既読・未読は見ない）
 const NEWS=[
- {at:JT(10,13,13,0),to:RESET1,dot:DOT1,t:'予告',h:'10/14 0:00 に、初級ランキングが新しくなります',b:'初級の「全期間」ランキングが、いったん空になって、新しく始まります。\n・消えるのは、初級のランキングだけです。中級・上級・超上級の記録は、そのままです\n・初級は「中級でレジ名人になったら卒業」。初心者や、気軽に遊びたい人のための難易度として整えます\n・0時以降のプレイから、また初級で記録を残せます'},
- {at:RESET1,dot:DOT1,v:'2.2',t:'ランキング',h:'初級ランキングが新しくなりました',b:'初級の全期間ランキングが、新しくなりました。「中級でレジ名人になったら卒業」のルールに合わせた整理です。0時以降の記録から、また始まります。'},
+ {at:JT(10,13,13,0),to:RESET1,dot:DOT1,t:'予告',h:'10/14 0:00 に、初級が新しくなります',b:'10/14 0:00 から、初級が次のように変わります。\n・初級の「全期間」ランキングが、いったん空になって、新しく始まります（消えるのは初級だけ。中級・上級・超上級の記録は、そのままです）\n・初級は、32000点（レジ名人）に届くと卒業です。32000点以上は、初級ではランキングに登録できなくなります\n・初級は、初心者や、気軽に遊びたい人のための難易度として整えます\n0時以降のプレイから、また初級で記録を残せます。'},
+ {at:RESET1,dot:DOT1,v:'2.3',t:'ランキング',h:'初級が新しくなりました',b:'初級の全期間ランキングが、新しくなりました。\n初級は、32000点（レジ名人）に届くと卒業です。32000点以上は、初級では登録できません。\n0時以降の記録から、また始まります。'},
  {at:JT(10,13,10,6),v:'2.2',t:'追加',h:'初級に「卒業」ができました',b:'中級・上級でレジ名人（25000点）、超上級で55000点に届くと、初級は卒業です。\n難易度選択の初級に「卒業」のシールが付き、選べなくなります。初級のランキングは、今までどおり見られます。\n初級は、初心者や、気軽に遊びたい人のための難易度です。'},
  {at:JT(10,13,3,16),v:'2.1',t:'追加',h:'超上級（ブランドショップ）が遊べます',b:'高級品だけが並ぶ、いちばん難しいレジです。\n・防犯タグ：上の「タグ外し」の枠で、じっと押さえて外します\n・タグを付けたまま通すと誤スキャン。1回で1000点の減点です\n・汚れて読めないバーコードは、6桁の商品コードを入力します\n・かごが空になるまで、次のかごは来ません\nランキングは、難易度ごとに分かれています。'},
  {at:JT(10,13,1,50),v:'2.0',t:'追加',h:'難易度を選べるようになりました',b:'初級（屋台）・中級（スーパー）・上級（百貨店）で遊べます。お店ごとに、レジも商品も変わります。\nランキングは難易度ごとに分かれます。中級は、今までと同じルール・同じ点数のままです。\n難易度は、タイトル画面の「難易度」から選べます。'},
