@@ -24,6 +24,9 @@ const UPSERT=`INSERT INTO scores(scope,h,name,sc,pf,mc,cnt,at) VALUES(?,?,?,?,?,
   at=CASE WHEN ${AFTER} THEN excluded.at ELSE at END`;
 // 卒業: 中級・上級でレジ名人(25000点)、超上級で55000点に届いた人は、初級に登録できない（既存の初級の記録は消さない）
 const isGrad=async(db,h)=>!!await db.prepare("SELECT 1 AS x FROM scores WHERE scope IN ('all','all:3','all:4') AND h=? AND sc>=CASE scope WHEN 'all:4' THEN 55000 ELSE 25000 END LIMIT 1").bind(h).first();
+// 初級のランキング(全期間)を、日本時間 2026-10-14 0:00 に一度だけ空にする。0時を過ぎて最初の初級の閲覧・登録のときに、それ以前の初級の記録を消す（0時以降の記録は残る）。数日後に、この3行と呼び出しは外してよい
+const PURGE1=Date.UTC(2026,9,13,15,0,0);
+const purge1=async db=>{if(Date.now()>=PURGE1)await db.prepare("DELETE FROM scores WHERE scope='all:1' AND at<?").bind(PURGE1).run()};
 async function rankOf(db,scope,h){
  const me=await db.prepare('SELECT sc,pf,at FROM scores WHERE scope=? AND h=?').bind(scope,h).first();if(!me)return 0;
  const r=await db.prepare('SELECT COUNT(*) AS n FROM scores WHERE scope=? AND (sc>? OR (sc=? AND pf>?) OR (sc=? AND pf=? AND at<?))').bind(scope,me.sc,me.sc,me.pf,me.sc,me.pf,me.at).first();
@@ -34,13 +37,13 @@ export async function onRequest({request,env}){
  if(!db)return J({error:'no-db'},503);
  if(p==='start'&&request.method==='GET'){const ts=Date.now();return J({v:4,t:ts+'.'+await sign(env.SECRET||'dev',String(ts))})}
  if(p==='rank'&&request.method==='GET'){
-  const sc=u.searchParams.get('scope')==='all'?'all':'day',d=DOK(u.searchParams.get('d')),ck=new Request(u.origin+'/api/rank?scope='+sc+'&lv='+d+'&d='+day()),hit=u.searchParams.get('fresh')?null:await caches.default.match(ck);
+  const sc=u.searchParams.get('scope')==='all'?'all':'day',d=DOK(u.searchParams.get('d'));if(d===1)await purge1(db);const ck=new Request(u.origin+'/api/rank?scope='+sc+'&lv='+d+'&d='+day()),hit=u.searchParams.get('fresh')?null:await caches.default.match(ck);
   if(hit)return hit;
   const{results}=await db.prepare('SELECT name AS n,sc,pf,mc,h FROM scores WHERE scope=? ORDER BY sc DESC,pf DESC,at ASC LIMIT 100').bind(SKEY(sc==='all'?'all':day(),d)).all();
-  const res=new Response(JSON.stringify({items:results.map((x,i)=>({r:i+1,...x}))}),{headers:{'content-type':'application/json','cache-control':'public, max-age=10'}});
+  const res=new Response(JSON.stringify({items:results.map((x,i)=>({r:i+1,...x}))}),{headers:{'content-type':'application/json','cache-control':'public, max-age=30'}});
   await caches.default.put(ck,res.clone());return res}
  if(p==='grad'&&request.method==='GET'){const h=String(u.searchParams.get('h')||'');if(!/^[0-9a-f]{16}$/.test(h))return J({error:'h'},400);return J({g:await isGrad(db,h)?1:0})}
- if(p==='me'&&request.method==='GET'){ // my own rank (not cached), for the "you are #n" card
+ if(p==='me'&&request.method==='GET'){if(DOK(u.searchParams.get('d'))===1)await purge1(db); // my own rank (not cached), for the "you are #n" card
   const scope=SKEY(u.searchParams.get('scope')==='all'?'all':day(),DOK(u.searchParams.get('d'))),h=String(u.searchParams.get('h')||'');
   if(!/^[0-9a-f]{16}$/.test(h))return J({error:'h'},400);
   const row=await db.prepare('SELECT name AS n,sc,pf,mc FROM scores WHERE scope=? AND h=?').bind(scope,h).first();
@@ -53,11 +56,13 @@ export async function onRequest({request,env}){
   const c=+b.count,pf=+b.perf,mc=+b.maxC,d=b.d===undefined?2:+b.d; // old clients send no d: treat as 中級
   if(![1,2,3,4].includes(d))return J({error:'diff'},400);
   if(!OPEN[d])return J({error:'locked'},403);
+  if(d===1)await purge1(db);
   const x=d===4?(b.mx===undefined?0:+b.mx):0; // 誤スキャン回数（超上級のみ）
   const y=d>=3?(b.y===undefined?0:+b.y):0; // total yen (上級・超上級のみ得点に入る。中級は従来の式のまま)
   if(![c,pf,mc,y,x].every(Number.isInteger)||x<0||x>200||c<0||c>70||pf<0||pf>c||mc<0||mc>c||y<0||y>c*MAXP[d])return J({error:'range'},400);
   const h=(await sha(b.pid)).slice(0,16);
   if(d===1&&await isGrad(db,h))return J({error:'grad'},403);
+  if(d===1&&Date.now()>=PURGE1&&calc(1,c,pf,mc,0,0)>=32000)return J({error:'cap'},403); // 初級はレジ名人(32000)未満のみ登録可
   if(env.SECRET){ // token from /api/start: must be 55s..30min old, single use
    const[ts,sig]=String(b.t||'').split('.'),age=Date.now()-(+ts);
    if(!ts||!sig||!(age>55e3&&age<18e5)||sig!==await sign(env.SECRET,ts))return J({error:'token'},400);
@@ -66,6 +71,6 @@ export async function onRequest({request,env}){
   const sc=calc(d,c,pf,mc,y,x),now=Date.now(),dy=day(),up=db.prepare(UPSERT),ka=SKEY('all',d),kd=SKEY(dy,d);
   // rows of earlier days in the 'today' scope are not kept (deleted below); 'all:d' rows stay
   await db.batch([up.bind(ka,h,name,sc,pf,mc,c,now),up.bind(kd,h,name,sc,pf,mc,c,now),
-   db.prepare("DELETE FROM scores WHERE substr(scope,1,3)<>'all' AND substr(scope,1,8)<?").bind(dy),db.prepare('DELETE FROM used_tokens WHERE at<?').bind(now-36e5)]);
+   db.prepare("DELETE FROM scores WHERE scope<?").bind(dy),db.prepare('DELETE FROM used_tokens WHERE at<?').bind(now-36e5)]);
   return J({all:await rankOf(db,ka,h),day:await rankOf(db,kd,h)})}
  return J({error:'not-found'},404)}
