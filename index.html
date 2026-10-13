@@ -22,10 +22,15 @@ body{display:flex;align-items:center;justify-content:center}
 
 input{-webkit-user-select:text;user-select:text}.nk{display:flex;gap:6px;margin-top:12px}.nk input{flex:1;min-width:0;padding:10px;border:1px solid #bbb;border-radius:8px;font:600 16px system-ui;background:#fff;color:#23262a}.rc .nk button{width:auto;margin:0;padding:0 16px}#rmsg{min-height:16px;font-size:12px;text-align:center;margin:2px 0 6px;color:#a1281c}.sm.note{margin:5px 0 0}
 #start button{margin-top:4px;padding:10px 20px;border:1px solid rgba(255,255,255,.4);border-radius:99px;background:rgba(10,12,14,.65);color:#e8eef3;font:600 14px system-ui}
-#rk,#hw,#dp{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,12,14,.85);padding:16px;z-index:9}#rk.on,#hw.on,#dp.on{display:flex}
+#rk,#hw,#dp,#nw{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,12,14,.85);padding:16px;z-index:9}#rk.on,#hw.on,#dp.on,#nw.on{display:flex}
 .rb{width:min(92vw,340px);height:min(80vh,560px);display:flex;flex-direction:column;background:#f6f5f0;color:#23262a;border-radius:10px;padding:12px;font-family:system-ui}.rh{display:flex;gap:6px;margin-bottom:8px}.rh button{flex:1;padding:9px;border:0;border-radius:8px;background:#e4e2d8;font:700 14px system-ui;color:#23262a}.rh button.a{background:#e0392b;color:#fff}.rtt{margin:0 0 10px;text-align:center;font:800 18px system-ui;letter-spacing:.25em}.cl{margin-top:10px;padding:11px;border:0;border-radius:8px;background:#23262a;color:#fff;font:700 14px system-ui}#rn{font-size:11px;text-align:center;opacity:.6;margin-bottom:6px}#rl{flex:1}
 .rr.r1 b,.rr.r2 b,.rr.r3 b{width:26px;height:26px;line-height:26px;border-radius:50%;color:#fff;margin:auto}.rr.r1 b{background:#d9a521}.rr.r2 b{background:#9aa3ab}.rr.r3 b{background:#b97a45}
-.tb{display:flex;flex-direction:column;gap:10px}#start i,.tb button{box-sizing:border-box;width:220px;text-align:center}.rr em small{display:inline;font-size:11px;opacity:.6;margin-left:2px}.rh2{opacity:.6;border-bottom:1px solid #aaa}.rr.rh2 b,.rr.rh2 span,.rr.rh2 em{font:600 12px system-ui;opacity:1}#hwl{overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch;touch-action:pan-y;font-size:13px;line-height:1.7;flex:1}#hwl h3{margin:12px 0 2px;font-size:13px}#hwl p,#hwl ul{margin:0}#hwl ul{padding-left:1.2em}
+.tb{display:flex;flex-direction:column;gap:10px}#start i,.tb button{box-sizing:border-box;width:220px;text-align:center}.rr em small{display:inline;font-size:11px;opacity:.6;margin-left:2px}.rh2{opacity:.6;border-bottom:1px solid #aaa}.rr.rh2 b,.rr.rh2 span,.rr.rh2 em{font:600 12px system-ui;opacity:1}#nwb{position:absolute;left:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));margin:0!important;padding:6px 12px!important;font-size:12px!important;opacity:.92}
+#nwl{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.ni{padding:11px 2px;border-bottom:1px solid #dcd8c9}.ni:last-child{border-bottom:0}.ni .m{display:flex;align-items:center;gap:8px;margin-bottom:4px}.ni .dt{font:700 12px ui-monospace,Menlo,monospace;color:#6b6f73}.ni .tg{font:800 10px system-ui;color:#fff;border-radius:4px;padding:2px 7px;letter-spacing:.04em}
+.cv{font:700 12px system-ui;color:#6b6f73;text-align:center;padding:2px 0 8px;border-bottom:1px solid #dcd8c9}
+.ni h4{margin:0 0 3px;font-size:14px;line-height:1.5}.ni p{margin:0;font-size:12.5px;line-height:1.75;color:#3b3f44}
+#hwl{overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch;touch-action:pan-y;font-size:13px;line-height:1.7;flex:1}#hwl h3{margin:12px 0 2px;font-size:13px}#hwl p,#hwl ul{margin:0}#hwl ul{padding-left:1.2em}
 #rl{position:relative;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch;touch-action:pan-y;font-size:13px}.rr{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:8px;padding:7px 4px;border-bottom:1px dotted #aaa}.rr b{text-align:center;font-family:ui-monospace,monospace}.rr small{display:block;font-size:10px;opacity:.6}.rr em{font:700 16px ui-monospace,monospace;font-style:normal}.rr.me{background:#fff3c4}
 .mc{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:2px 6px;padding:8px 10px;border-radius:8px;margin-bottom:8px;font-size:13px}.mc b{font:800 22px ui-monospace,monospace}.mc small{flex-basis:100%;text-align:center;font-size:11px;opacity:.7}
 .mc.in{background:#fff3c4;border:1px solid #e0b93a}.mc.out{background:#f1ece0;border:1px solid #c9c2ad}.mc.no{background:#eceae0;border:1px dashed #9a9786;flex-direction:column;align-items:center;gap:2px}.mc.no b{font:800 15px system-ui}
@@ -45,13 +50,14 @@ input{-webkit-user-select:text;user-select:text}.nk{display:flex;gap:6px;margin-
 @media(prefers-reduced-motion:reduce){.dcard.wob{animation:none}}
 </style></head><body>
 <canvas id="c"></canvas>
-<div id="start"><b>ピッ！セルフレジ</b><i>TAP TO START</i><div class='tb'><button id='dfb'></button><button id='hwb'>遊び方</button><button id='rkb'>ランキング</button></div></div>
+<div id="start"><b>ピッ！セルフレジ</b><i>TAP TO START</i><div class='tb'><button id='dfb'></button><button id='hwb'>遊び方</button><button id='rkb'>ランキング</button></div><button id='nwb'>お知らせ</button></div>
 <div id='res'><div class='rc'><h2>ご利用ありがとうございました</h2><dl id='rd'></dl><div id='ttl'></div><div id='best'></div><button id='again'>もう一回</button><button id='shr' class='s'>レシートを共有</button></div></div>
 <div id='rk'><div class='rb'><h2 class='rtt'>ランキング</h2><div class='rh dd' id='rdf'></div><div class='rh'><button id='rt1' class='a'>今日</button><button id='rt2'>全期間</button></div><div id='rn'></div><div id='rm'></div><div id='rl'></div><button id='rx' class='cl'>閉じる</button></div></div>
 <div id='dp'><div class='rb'><h2 class='rtt'>難易度</h2><div id='dpl'></div><button id='dx' class='cl'>閉じる</button></div></div>
+<div id='nw'><div class='rb'><h2 class='rtt'>お知らせ</h2><div id='nwl'></div><button id='nx' class='cl'>閉じる</button></div></div>
 <div id='hw'><div class='rb'><h2 class='rtt'>遊び方</h2><div id='hwl'>
 <p>制限時間は60秒。さばいた点数とパーフェクトの数で、称号とランキングが決まります。</p>
-<h3>難易度</h3><ul><li>初級（屋台）：判定が広め。数をこなそう。レジ名人になったら卒業（ランキングは見られます）</li><li>中級（スーパー）：判定はふつう。コンボとパーフェクトを狙おう</li><li>上級（百貨店）：判定がせまくなり、金額の高い商品ほど高得点</li><li>超上級（ブランドショップ）：ほぼ真っすぐでないと読めない高級品。防犯タグを外してから通す。付けたまま通すと減点。かごが空になってから次のかご</li><li>お店ごとに、レジも商品も変わります</li></ul>
+<h3>難易度</h3><ul><li>初級（屋台）：判定が広め。数をこなそう。中級でレジ名人になったら卒業（ランキングは見られます）</li><li>中級（スーパー）：判定はふつう。コンボとパーフェクトを狙おう</li><li>上級（百貨店）：判定がせまくなり、金額の高い商品ほど高得点</li><li>超上級（ブランドショップ）：ほぼ真っすぐでないと読めない高級品。防犯タグを外してから通す。付けたまま通すと減点。かごが空になってから次のかご</li><li>お店ごとに、レジも商品も変わります</li></ul>
 <h3>1. 取り出す</h3><p>カゴの商品を指でつかんで、持ち上げます。</p>
 <h3>2. バーコードを探す</h3><p>商品をタップすると裏返ります。バーコードの面は商品によって違います。端をつかんで動かすか、横に振ると、商品が回ります。</p>
 <h3>3. レーザーに通す</h3><p>バーコードがレーザーと水平になるように向けて通します。速く読めるほどパーフェクト。「ピッ」と鳴ったら指を離すと、袋へ飛んでいきます。</p>
@@ -587,7 +593,7 @@ let last=0,acc=0,fps=60,slow=0;
 function frame(t){requestAnimationFrame(frame);const rd=(t-last)/1000||0,dt=Math.min(.05,rd);last=t;clock+=dt;if(rd<.25){fps+=(1/Math.max(dt,.001)-fps)*.05;if(fps<28)slow+=dt;else slow=0}if(clock>6&&slow>3&&RMAX>2){RMAX=2;fit()}
  let ts=1;if(hs>0){hs-=dt;ts=0}else if(slowT>0){slowT-=dt;ts=lerp(.25,1,eIQ(clamp(1-slowT/slowD,0,1)))}
  if(cdT>0){cdT-=dt;const n=Math.ceil(Math.max(cdT,0));if(n!==cdN&&n>0){cdN=n;ping(pf(0),.25,.1)}if(cdT<=0){started=true;lastScan=clock;goT=.6;ping(pf(12),.3,.2);ping(pf(7)*2,.2,.2,.08)}}if(goT>0)goT-=dt;
- if(started||(demo&&!$('rk').classList.contains('on')&&!$('hw').classList.contains('on')&&!$('dp').classList.contains('on'))){acc+=dt*ts;while(acc>=DT){step(DT);acc-=DT}}fx(dt);draw()}
+ if(started||(demo&&!$('rk').classList.contains('on')&&!$('hw').classList.contains('on')&&!$('dp').classList.contains('on')&&!$('nw').classList.contains('on'))){acc+=dt*ts;while(acc>=DT){step(DT);acc-=DT}}fx(dt);draw()}
 requestAnimationFrame(frame);
 
 // ---- round flow & receipts (with discounts) ----
@@ -656,7 +662,7 @@ async function register(){const el=$('nm'),msg=$('rmsg'),btn=$('reg'),name=Array
  const r=await jf('/api/score',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pid:PID,name,count:LR.count,perf:LR.perf,maxC:LR.maxC,d:LR.d,y:LR.total,mx:LR.mis||0,t:TOK})});
  if(r&&r.ok&&r.j){msg.style.color='#2a7a3a';msg.textContent='登録しました！ 今日 '+(r.j.day?r.j.day+'位':'圏外')+' / 全期間 '+(r.j.all?r.j.all+'位':'圏外');MINE={n:name,sc:LR.sc,pf:LR.perf,mc:LR.maxC,d:LR.d};RKD=LR.d;showRank('day',true)}
  else{btn.disabled=false;msg.style.color='#a1281c';const e=r&&r.j&&r.j.error;msg.textContent=!r?'ランキングに接続できません':e==='ng'?'使えない言葉が含まれています':e==='grad'?'初級は卒業しました':e==='token'||e==='used'?'この結果は登録できません（もう一度遊んでください）':'登録できませんでした'}}
-async function showRank(sc,fresh){rkScope=sc;const dd=RKD;$('rk').classList.add('on');[...$('rdf').children].forEach((b,i)=>b.classList.toggle('a',i+1===dd));$('rt1').classList.toggle('a',sc==='day');$('rt2').classList.toggle('a',sc==='all');$('rn').textContent=sc==='day'?'毎日0時（日本時間）にリセット／上位100位まで':'これまでのすべての記録／上位100位まで';if(dd===1)$('rn').append(document.createElement('br'),Object.assign(document.createElement('b'),{textContent:'レジ名人になったら卒業'}));
+async function showRank(sc,fresh){rkScope=sc;const dd=RKD;$('rk').classList.add('on');[...$('rdf').children].forEach((b,i)=>b.classList.toggle('a',i+1===dd));$('rt1').classList.toggle('a',sc==='day');$('rt2').classList.toggle('a',sc==='all');$('rn').textContent=sc==='day'?'毎日0時（日本時間）にリセット／上位100位まで':'これまでのすべての記録／上位100位まで';if(dd===1)$('rn').append(document.createElement('br'),Object.assign(document.createElement('b'),{textContent:'中級でレジ名人になったら卒業'}));if(dd===1&&Date.now()>=RESET1&&Date.now()<RESET1+3*864e5)$('rn').append(document.createElement('br'),'10/14 0:00 にリセットしました');
  const l=$('rl'),m=$('rm');l.textContent='読み込み中…';m.innerHTML='';
  if(LOCK[dd]){l.innerHTML="<div class='soon'><b>準備中</b><span>"+DFS[dd].n+'は近日公開です。<br>お楽しみに！</span></div>';return}
  if(dd!==2){await SVP;if(SV<(dd===4?3:2)){l.innerHTML="<div class='soon'><b>準備中</b><span>この難易度のランキングは、<br>サーバーの更新後に利用できます。</span></div>";return}}
@@ -675,6 +681,23 @@ const DC=[];
 DFS.forEach((o,i)=>{if(!o)return;let b=document.createElement('button');DC[i]=b;b.className='dcard'+(LOCK[i]?' lk':'');b.innerHTML='<b>'+o.n+'</b><span>'+o.shop+'</span><small>'+o.cap+'</small>';b.onclick=()=>{if(isLk(i)){b.classList.remove('wob');void b.offsetWidth;b.classList.add('wob');return}setDiff(i,1);$('dp').classList.remove('on')};$('dpl').appendChild(b);b=document.createElement('button');b.textContent=o.n;if(LOCK[i])b.className='lk';b.onclick=()=>{RKD=i;showRank(rkScope)};$('rdf').appendChild(b)});rfLk();setDiff(DIFF);
 $('dfb').onclick=e=>{e.stopPropagation();$('dp').classList.add('on')};$('dx').onclick=()=>$('dp').classList.remove('on');
 $('hwb').onclick=e=>{e.stopPropagation();$('hw').classList.add('on')};$('hx').onclick=()=>$('hw').classList.remove('on');
+
+// ---- お知らせ（新しい順。日付と時刻は日本時間。at が未来の項目は、その時刻になったら表示される） ----
+const RESET1=Date.UTC(2026,9,13,15,0,0); // 2026-10-14 0:00 JST: 初級ランキングのリセット
+const JT=(m,d,h,mi)=>Date.UTC(2026,m-1,d,h-9,mi||0);
+const TAGC={'新機能':'#e0392b','改善':'#2f6fb5','修正':'#4a7a4a','ランキング':'#b07a10','お知らせ':'#555'};
+const NEWS=[
+ {at:RESET1,v:'2.2',t:'ランキング',h:'初級ランキングを新しくしました',b:'初級の全期間ランキングをリセットしました。「中級でレジ名人になったら卒業」のルールに合わせた整理です。0時以降の記録から、また始まります。'},
+ {at:JT(10,13,10,6),v:'2.2',t:'新機能',h:'初級に「卒業」ができました',b:'中級・上級でレジ名人（25000点）、超上級で55000点に届くと、初級は卒業です。\n難易度選択の初級に「卒業」のシールが付き、選べなくなります。初級のランキングは、今までどおり見られます。\n初級は、初心者や、気軽に遊びたい人のための難易度です。'},
+ {at:JT(10,13,3,16),v:'2.1',t:'新機能',h:'超上級（ブランドショップ）が遊べます',b:'高級品だけが並ぶ、いちばん難しいレジです。\n・防犯タグ：上の「タグ外し」の枠で、じっと押さえて外します\n・タグを付けたまま通すと誤スキャン。1回で1000点の減点です\n・汚れて読めないバーコードは、6桁の商品コードを入力します\n・かごが空になるまで、次のかごは来ません\nランキングは、難易度ごとに分かれています。'},
+ {at:JT(10,13,1,50),v:'2.0',t:'新機能',h:'難易度を選べるようになりました',b:'初級（屋台）・中級（スーパー）・上級（百貨店）で遊べます。お店ごとに、レジも商品も変わります。\nランキングは難易度ごとに分かれます。中級は、今までと同じルール・同じ点数のままです。\n難易度は、タイトル画面の「難易度」から選べます。'},
+ {at:JT(10,12,15,0),v:'1.1',t:'新機能',h:'商品が増えました',b:'お肉（和牛ステーキ・豚バラ・牛こま切れ・ひき肉など）、果物（シャインマスカットなど）、ギフト菓子が、レジに並ぶようになりました。'},
+ {at:JT(10,12,9,0),v:'1.0',t:'お知らせ',h:'ピッ！セルフレジを公開しました',b:'商品のバーコードをレーザーに通して、60秒でどれだけ会計できるかを競うゲームです。\n結果はレシートにして共有でき、ランキングにも登録できます。'}
+];
+const nVis=()=>NEWS.filter(n=>n.at<=Date.now()).sort((a,b)=>b.at-a.at);
+function openNews(){$('nwl').innerHTML=(nVis()[0]?`<div class='cv'>現在のバージョン　Ver.${esc(nVis()[0].v)}</div>`:'')+nVis().map(n=>`<div class='ni'><div class='m'><span class='dt'>Ver.${esc(n.v)}</span><span class='tg' style='background:${TAGC[n.t]||'#555'}'>${esc(n.t)}</span></div><h4>${esc(n.h)}</h4><p>${esc(n.b).replace(/\n/g,'<br>')}</p></div>`).join('')||'<p>お知らせはまだありません</p>';$('nwl').scrollTop=0;$('nw').classList.add('on')}
+$('nwb').onclick=e=>{e.stopPropagation();openNews()};$('nx').onclick=()=>$('nw').classList.remove('on');
+
 // ---- share text (hashtag has no "！" so it stays a link on X/LINE) ----
 const SHARE_TAG='#ピッ_セルフレジ',SHARE_MSG='';
 function shareX(){const u='https://x.com/intent/post?text='+encodeURIComponent(shareText());const w=window.open(u,'_blank','noopener');if(!w)location.href=u}
