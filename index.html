@@ -617,7 +617,7 @@ function finish(){started=false;menuIt=null;for(const q of dq)total-=q[1];dq.len
  +dl(D.rows.length?D.rows.map(r=>[r[2]?`<small class='dc'>${r[0]}</small>`:r[0],r[2]?`<small class='dc'>${yn(r[1])}</small>`:yn(r[1])]):[['（商品なし）','']])
  +(D.ds?dl([['（商品合計）',yn(D.gross)],['（値引合計）',yn(-D.ds)]]):'')+dl([['合　計',yn(total)]],'tot')+dl([['（内消費税等）',yn(D.tax)],['お預り',yn(D.dep)],['お釣',yn(D.dep-total)]])
  +dl([['スコア',sc.toLocaleString()],['難易度',DFS[DIFF].n],['さばいた点数',count],['パーフェクト',perf],['最大コンボ',maxC]].concat(DIFF===4?[['誤スキャン（-'+MISP+'点）',mis+'回']]:[]),'scr')
- +`<div id='ttl'>${tt}</div><div id='best'>${maxC>best?'最大コンボ自己ベスト更新！':'最大'+best+'コンボ'}</div>${cap?"<div class='sm note'><b>レジ名人！初級は卒業です</b><br>初級では登録できません。中級以上で挑戦しよう</div>":newGrad?"<div class='sm note'>レジ名人！初級は卒業です</div>":''}${cap?'':`<div class='nk'><input id='nm' maxlength='10' enterkeyhint='done' autocomplete='off' placeholder='ニックネーム（10文字まで）' value='${NM}'><button id='reg'>登録</button></div><div class='sm note'>登録すると、ニックネームと点数がランキングに公開されます</div>`}<div id='rmsg'></div><button id='again'>もう一回</button><button id='rkv' class='s'>ランキングを見る</button><div class='sh2'><button id='shr' class='s'>レシートを共有</button><button id='xsh' class='x'>Xで共有<small>（画像なし）</small></button></div><button id='home' class='s'>タイトルへ</button>`;
+ +`<div id='ttl'>${tt}</div><div id='best'>${maxC>best?'最大コンボ自己ベスト更新！':'最大'+best+'コンボ'}</div>${cap?"<div class='sm note'><b>レジ名人！初級は卒業です</b><br>初級では登録できません。中級以上で挑戦しよう</div>":newGrad?"<div class='sm note'>レジ名人！初級は卒業です</div>":''}${cap?'':!DBOK?`<div class='sm note'><b>いまはランキングにつながりにくく、登録できません</b><br>レシートの共有は使えます</div>`:`<div class='nk'><input id='nm' maxlength='10' enterkeyhint='done' autocomplete='off' placeholder='ニックネーム（10文字まで）' value='${NM}'><button id='reg'>登録</button></div><div class='sm note'>登録すると、ニックネームと点数がランキングに公開されます</div>`}<div id='rmsg'></div><button id='again'>もう一回</button><button id='rkv' class='s'>ランキングを見る</button><div class='sh2'><button id='shr' class='s'>レシートを共有</button><button id='xsh' class='x'>Xで共有<small>（画像なし）</small></button></div><button id='home' class='s'>タイトルへ</button>`;
  $('again').onclick=()=>{$('res').classList.remove('on');reset()};$('shr').onclick=share;$('xsh').onclick=shareX;if($('reg'))$('reg').onclick=register;$('rkv').onclick=()=>{RKD=LR.d;showRank('day')};
  $('home').onclick=()=>{$('res').classList.remove('on');items.length=0;total=shown=count=combo=perf=maxC=0;timeLeft=60;lastL=null;label=null;dq.length=0;demoInit();$('start').style.display='flex'};$('res').classList.add('on')},700)}
 function share(){const r=LR,D=r.D,hh=D.rows.reduce((a,x,i)=>a+(x[2]?50:(D.rows[i+1]&&D.rows[i+1][2]?31:42)),0),sY=534+hh+(D.ds?88:0),stY=sY+215,pB=stY+105,H=pB+40,c=document.createElement('canvas');c.width=620;c.height=pB-40;const g=c.getContext('2d');g.translate(-50,-40);
@@ -653,9 +653,10 @@ const BADW=['しね','死ね','ころす','殺す','ばか','あほ','ちんこ'
 const nrm=s=>s.normalize('NFKC').toLowerCase().replace(/[\s_\-.*・]+/g,'').replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-96));
 const isBad=s=>{const n=nrm(s);return BADW.some(w=>n.includes(w))};
 async function jf(url,opt){try{const c=new AbortController(),t=setTimeout(()=>c.abort(),6000),r=await fetch(url,{...opt,signal:c.signal});clearTimeout(t);return{ok:r.ok,j:await r.json().catch(()=>null)}}catch(e){return null}}
-function apiStart(){TOK='';jf('/api/start').then(r=>{if(r&&r.ok&&r.j)TOK=r.j.t||''})}
+let DBOK=true; // ランキング（データベース）につながっているか。つながらないときは、登録欄を出さない
+function apiStart(){TOK='';jf('/api/start').then(r=>{DBOK=!!(r&&r.ok&&r.j&&r.j.db!==0);if(r&&r.ok&&r.j)TOK=r.j.t||''})}
 // server generation: v>=2 knows about difficulties. With an older server, non-中級 results must NOT be sent (they would land in the 中級 ranking).
-let SV=0;const SVP=jf('/api/start').then(r=>{SV=r&&r.ok&&r.j&&r.j.v>=3?3:r&&r.ok&&r.j&&r.j.v>=2?2:1});
+let SV=0;const SVP=jf('/api/start').then(r=>{DBOK=!!(r&&r.ok&&r.j&&r.j.db!==0);SV=r&&r.ok&&r.j&&r.j.v>=3?3:r&&r.ok&&r.j&&r.j.v>=2?2:1});
 async function register(){const el=$('nm'),msg=$('rmsg'),btn=$('reg'),name=Array.from(el.value.replace(/['"<>&]/g,'').trim()).slice(0,10).join('');
  if(!name){msg.textContent='ニックネームを入力してください';return}if(isBad(name)){msg.textContent='使えない言葉が含まれています';return}
  if(LR.d!==2){await SVP;if(SV<(LR.d===4?3:2)){msg.style.color='#a1281c';msg.textContent='この難易度のランキングは準備中です（サーバー更新後に登録できます）';return}}
