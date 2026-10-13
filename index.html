@@ -26,6 +26,7 @@ input{-webkit-user-select:text;user-select:text}.nk{display:flex;gap:6px;margin-
 .rb{width:min(92vw,340px);height:min(80vh,560px);display:flex;flex-direction:column;background:#f6f5f0;color:#23262a;border-radius:10px;padding:12px;font-family:system-ui}.rh{display:flex;gap:6px;margin-bottom:8px}.rh button{flex:1;padding:9px;border:0;border-radius:8px;background:#e4e2d8;font:700 14px system-ui;color:#23262a}.rh button.a{background:#e0392b;color:#fff}.rtt{margin:0 0 10px;text-align:center;font:800 18px system-ui;letter-spacing:.25em}.cl{margin-top:10px;padding:11px;border:0;border-radius:8px;background:#23262a;color:#fff;font:700 14px system-ui}#rn{font-size:11px;text-align:center;opacity:.6;margin-bottom:6px}#rl{flex:1}
 .rr.r1 b,.rr.r2 b,.rr.r3 b{width:26px;height:26px;line-height:26px;border-radius:50%;color:#fff;margin:auto}.rr.r1 b{background:#d9a521}.rr.r2 b{background:#9aa3ab}.rr.r3 b{background:#b97a45}
 .tb{display:flex;flex-direction:column;gap:10px}#start i,.tb button{box-sizing:border-box;width:220px;text-align:center}.rr em small{display:inline;font-size:11px;opacity:.6;margin-left:2px}.rh2{opacity:.6;border-bottom:1px solid #aaa}.rr.rh2 b,.rr.rh2 span,.rr.rh2 em{font:600 12px system-ui;opacity:1}#nwb{position:absolute;left:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));margin:0!important;padding:6px 12px!important;font-size:12px!important;opacity:.92}
+#nwb.n::after{content:'';position:absolute;right:-2px;top:-3px;width:10px;height:10px;border-radius:50%;background:#ff5a4a;border:2px solid #14171a}
 #nwl{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
 .ni{padding:11px 2px;border-bottom:1px solid #dcd8c9}.ni:last-child{border-bottom:0}.ni .m{display:flex;align-items:center;gap:8px;margin-bottom:4px}.ni .dt{font:700 12px ui-monospace,Menlo,monospace;color:#6b6f73}.ni .tg{font:800 10px system-ui;color:#fff;border-radius:4px;padding:2px 7px;letter-spacing:.04em}
 .cv{font:700 12px system-ui;color:#6b6f73;text-align:center;padding:2px 0 8px;border-bottom:1px solid #dcd8c9}
@@ -662,7 +663,7 @@ async function register(){const el=$('nm'),msg=$('rmsg'),btn=$('reg'),name=Array
  const r=await jf('/api/score',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pid:PID,name,count:LR.count,perf:LR.perf,maxC:LR.maxC,d:LR.d,y:LR.total,mx:LR.mis||0,t:TOK})});
  if(r&&r.ok&&r.j){msg.style.color='#2a7a3a';msg.textContent='登録しました！ 今日 '+(r.j.day?r.j.day+'位':'圏外')+' / 全期間 '+(r.j.all?r.j.all+'位':'圏外');MINE={n:name,sc:LR.sc,pf:LR.perf,mc:LR.maxC,d:LR.d};RKD=LR.d;showRank('day',true)}
  else{btn.disabled=false;msg.style.color='#a1281c';const e=r&&r.j&&r.j.error;msg.textContent=!r?'ランキングに接続できません':e==='ng'?'使えない言葉が含まれています':e==='grad'?'初級は卒業しました':e==='token'||e==='used'?'この結果は登録できません（もう一度遊んでください）':'登録できませんでした'}}
-async function showRank(sc,fresh){rkScope=sc;const dd=RKD;$('rk').classList.add('on');[...$('rdf').children].forEach((b,i)=>b.classList.toggle('a',i+1===dd));$('rt1').classList.toggle('a',sc==='day');$('rt2').classList.toggle('a',sc==='all');$('rn').textContent=sc==='day'?'毎日0時（日本時間）にリセット／上位100位まで':'これまでのすべての記録／上位100位まで';if(dd===1)$('rn').append(document.createElement('br'),Object.assign(document.createElement('b'),{textContent:'中級でレジ名人になったら卒業'}));if(dd===1&&Date.now()>=RESET1&&Date.now()<RESET1+3*864e5)$('rn').append(document.createElement('br'),'10/14 0:00 にリセットしました');
+async function showRank(sc,fresh){rkScope=sc;const dd=RKD;$('rk').classList.add('on');[...$('rdf').children].forEach((b,i)=>b.classList.toggle('a',i+1===dd));$('rt1').classList.toggle('a',sc==='day');$('rt2').classList.toggle('a',sc==='all');$('rn').textContent=sc==='day'?'毎日0時（日本時間）にリセット／上位100位まで':'これまでのすべての記録／上位100位まで';if(dd===1)$('rn').append(document.createElement('br'),Object.assign(document.createElement('b'),{textContent:'中級でレジ名人になったら卒業'}));if(dd===1&&Date.now()>=RESET1&&Date.now()<RESET1+3*864e5)$('rn').append(document.createElement('br'),'10/14 0:00 に新しくなりました');
  const l=$('rl'),m=$('rm');l.textContent='読み込み中…';m.innerHTML='';
  if(LOCK[dd]){l.innerHTML="<div class='soon'><b>準備中</b><span>"+DFS[dd].n+'は近日公開です。<br>お楽しみに！</span></div>';return}
  if(dd!==2){await SVP;if(SV<(dd===4?3:2)){l.innerHTML="<div class='soon'><b>準備中</b><span>この難易度のランキングは、<br>サーバーの更新後に利用できます。</span></div>";return}}
@@ -685,18 +686,21 @@ $('hwb').onclick=e=>{e.stopPropagation();$('hw').classList.add('on')};$('hx').on
 // ---- お知らせ（新しい順。日付と時刻は日本時間。at が未来の項目は、その時刻になったら表示される） ----
 const RESET1=Date.UTC(2026,9,13,15,0,0); // 2026-10-14 0:00 JST: 初級ランキングのリセット
 const JT=(m,d,h,mi)=>Date.UTC(2026,m-1,d,h-9,mi||0);
-const TAGC={'追加':'#e0392b','改善':'#2f6fb5','修正':'#4a7a4a','ランキング':'#b07a10','お知らせ':'#555'};
+const TAGC={'追加':'#e0392b','改善':'#2f6fb5','修正':'#4a7a4a','ランキング':'#b07a10','予告':'#d9780f','お知らせ':'#555'};
+const DOT1=RESET1+3*864e5; // 赤い点は 10/17 0:00 まで（既読・未読は見ない）
 const NEWS=[
- {at:RESET1,v:'2.2',t:'ランキング',h:'初級ランキングを新しくしました',b:'初級の全期間ランキングをリセットしました。「中級でレジ名人になったら卒業」のルールに合わせた整理です。0時以降の記録から、また始まります。'},
+ {at:JT(10,13,13,0),to:RESET1,dot:DOT1,t:'予告',h:'10/14 0:00 に、初級ランキングが新しくなります',b:'初級の「全期間」ランキングが、いったん空になって、新しく始まります。\n・消えるのは、初級のランキングだけです。中級・上級・超上級の記録は、そのままです\n・初級は「中級でレジ名人になったら卒業」。初心者や、気軽に遊びたい人のための難易度として整えます\n・0時以降のプレイから、また初級で記録を残せます'},
+ {at:RESET1,dot:DOT1,v:'2.2',t:'ランキング',h:'初級ランキングが新しくなりました',b:'初級の全期間ランキングが、新しくなりました。「中級でレジ名人になったら卒業」のルールに合わせた整理です。0時以降の記録から、また始まります。'},
  {at:JT(10,13,10,6),v:'2.2',t:'追加',h:'初級に「卒業」ができました',b:'中級・上級でレジ名人（25000点）、超上級で55000点に届くと、初級は卒業です。\n難易度選択の初級に「卒業」のシールが付き、選べなくなります。初級のランキングは、今までどおり見られます。\n初級は、初心者や、気軽に遊びたい人のための難易度です。'},
  {at:JT(10,13,3,16),v:'2.1',t:'追加',h:'超上級（ブランドショップ）が遊べます',b:'高級品だけが並ぶ、いちばん難しいレジです。\n・防犯タグ：上の「タグ外し」の枠で、じっと押さえて外します\n・タグを付けたまま通すと誤スキャン。1回で1000点の減点です\n・汚れて読めないバーコードは、6桁の商品コードを入力します\n・かごが空になるまで、次のかごは来ません\nランキングは、難易度ごとに分かれています。'},
  {at:JT(10,13,1,50),v:'2.0',t:'追加',h:'難易度を選べるようになりました',b:'初級（屋台）・中級（スーパー）・上級（百貨店）で遊べます。お店ごとに、レジも商品も変わります。\nランキングは難易度ごとに分かれます。中級は、今までと同じルール・同じ点数のままです。\n難易度は、タイトル画面の「難易度」から選べます。'},
  {at:JT(10,12,15,0),v:'1.1',t:'追加',h:'商品が増えました',b:'お肉（和牛ステーキ・豚バラ・牛こま切れ・ひき肉など）、果物（シャインマスカットなど）、ギフト菓子が、レジに並ぶようになりました。'},
  {at:JT(10,12,9,0),v:'1.0',t:'お知らせ',h:'ピッ！セルフレジを公開しました',b:'商品のバーコードをレーザーに通して、60秒でどれだけ会計できるかを競うゲームです。\n結果はレシートにして共有でき、ランキングにも登録できます。'}
 ];
-const nVis=()=>NEWS.filter(n=>n.at<=Date.now()).sort((a,b)=>b.at-a.at);
-function openNews(){$('nwl').innerHTML=(nVis()[0]?`<div class='cv'>現在のバージョン　Ver.${esc(nVis()[0].v)}</div>`:'')+nVis().map(n=>`<div class='ni'><div class='m'><span class='dt'>Ver.${esc(n.v)}</span><span class='tg' style='background:${TAGC[n.t]||'#555'}'>${esc(n.t)}</span></div><h4>${esc(n.h)}</h4><p>${esc(n.b).replace(/\n/g,'<br>')}</p></div>`).join('')||'<p>お知らせはまだありません</p>';$('nwl').scrollTop=0;$('nw').classList.add('on')}
-$('nwb').onclick=e=>{e.stopPropagation();openNews()};$('nx').onclick=()=>$('nw').classList.remove('on');
+const nVis=()=>NEWS.filter(n=>n.at<=Date.now()&&!(n.to&&Date.now()>=n.to)).sort((a,b)=>b.at-a.at),nDot=()=>nVis().some(n=>n.dot&&Date.now()<n.dot);
+function rfNews(){$('nwb').classList.toggle('n',nDot())}
+function openNews(){$('nwl').innerHTML=(nVis().find(n=>n.v)?`<div class='cv'>現在のバージョン　Ver.${esc(nVis().find(n=>n.v).v)}</div>`:'')+nVis().map(n=>`<div class='ni'><div class='m'>${n.v?`<span class='dt'>Ver.${esc(n.v)}</span>`:''}<span class='tg' style='background:${TAGC[n.t]||'#555'}'>${esc(n.t)}</span></div><h4>${esc(n.h)}</h4><p>${esc(n.b).replace(/\n/g,'<br>')}</p></div>`).join('')||'<p>お知らせはまだありません</p>';$('nwl').scrollTop=0;$('nw').classList.add('on');rfNews()}
+$('nwb').onclick=e=>{e.stopPropagation();openNews()};$('nx').onclick=()=>$('nw').classList.remove('on');rfNews();setInterval(rfNews,6e4);
 
 // ---- share text (hashtag has no "！" so it stays a link on X/LINE) ----
 const SHARE_TAG='#ピッ_セルフレジ',SHARE_MSG='';
